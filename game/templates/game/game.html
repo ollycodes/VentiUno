@@ -1,0 +1,61 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'game/style.css' %}">
+    <meta charset="utf-8">
+    <meta name="description" content="A simple game of blackjack.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Blackjack</title>
+</head>
+
+<body>
+    <h1> Dealer's hand</h1>
+            {% if game.is_finished %}
+            <ul>
+                {% for card in table.dealer_hand %}
+                <li>{{ card.name }}</li>
+                {% endfor %}
+            </ul>
+            <p>Dealer's total: {{ game.dealer_total }}</p>
+            
+            {% else %}
+            <ul>
+                <li>{{ table.dealer_hand.0.name }}</li>
+            </ul>
+            {% endif %}
+
+    <h1> {{ table.player_name }}'s hand</h1>
+            <ul>
+                {% for card in table.player_hand %}
+                <li>{{ card.name }}</li>
+                {% endfor %}
+            </ul>
+            <p>player total: {{ game.player_total }}</p>
+
+    {% if game.is_finished %}
+        <p>{{ game.winner }}</p>
+        <form id="action-form" action="{% url 'bj:setup' %}" method="post">
+        {% csrf_token %}
+            <input type="text" id="player_name" name="player_name" value="{{ table.player_name }}" hidden>
+            <input type="submit" id="stand" value="Play_again">
+        </form>
+
+    {% else %}
+        <form id="action-form" action="{% url 'bj:hit' table.id %}" method="post">
+        {% csrf_token %}
+            <input type="submit" id="hit" value="hit">
+        </form>
+
+        <form id="action-form" action="{% url 'bj:stand' table.id %}" method="post">
+        {% csrf_token %}
+            <input type="submit" id="stand" value="stand">
+        </form>
+    {% endif %}
+
+
+</body>
+</html>

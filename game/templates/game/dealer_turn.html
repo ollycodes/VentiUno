@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'game/style.css' %}">
+    <meta charset="utf-8">
+    <meta name="description" content="A simple game of blackjack.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Blackjack</title>
+</head>
+
+<body>
+
+    <h1> Dealer's hand<h1>
+        <ul>
+            <li>{{ dealer_hand[0][0] }}</li>
+        </ul>
+
+    <h1> Player's hand<h1>
+        <ul>
+            {% for card in player_hand %}
+            <li>{{ card }}</li>
+            {% endfor %}
+        </ul>
+
+    <h1>
+        <!-- results here -->
+    </h1>
+
+    <form id="action-form" aciton="{% url 'bj:player_turn' player_name bet %}" method="post">
+        {% csrf_token %}
+      <label><input value="100" type="radio" name="bet_amount">100</label>
+      <label><input value="200" type="radio" name="bet_amount">200</label>
+      <label><input value="500" type="radio" name="bet_amount">500</label>
+        <input type="submit" id="submit" value="OK">bet
+    </form>
+
+</body>
+</html>

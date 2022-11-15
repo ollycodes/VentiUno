@@ -1,0 +1,26 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'game/style.css' %}">
+    <meta charset="utf-8">
+    <meta name="description" content="A simple game of blackjack.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Blackjack</title>
+</head>
+
+<body>
+    <header>
+        <h1 id="title">Blackjack</h1>
+    </header>
+
+    <form id="name-form" action="{% url 'bj:setup' %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

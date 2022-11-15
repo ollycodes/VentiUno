@@ -1,0 +1,45 @@
+/* BlackJack Style */
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    font-family: EB Garamond;
+    color: #dedede;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+} 
+
+h1 {
+    padding-left: 2rem;
+    margin: 1rem 0 0 0;
+}
+
+a {
+    color: #eeb9b9;
+}
+
+ul {
+    margin: 0;
+}
+
+li {
+    list-style-type: none;
+    margin: 2px 0px;
+    padding-left: 1rem;
+}
+
+p {
+    padding-left: 2rem;
+    margin: 1rem 0 0 0;
+}
+
+form {
+    margin: 1rem 0 0 2rem;
+}
+
+input {
+    padding: 10px;
+}
