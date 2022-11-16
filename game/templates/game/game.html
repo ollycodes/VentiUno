@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    <div class="wrapper">
     <h1> Dealer's hand</h1>
             {% if game.is_finished %}
             <ul>
@@ -37,25 +38,35 @@
             <p>player total: {{ game.player_total }}</p>
 
     {% if game.is_finished %}
-        <p>{{ game.winner }}</p>
+        {% if game.winner == "player won" %}
+            <p class="player-win">{{ table.player_name }} won!</p>
+        {% elif game.winner == "Dealer won!" %}
+            <p class="dealer-win">{{ game.winner }}</p>
+        {% else %}
+            <p class="draw">{{ game.winner }}</p>
+        {% endif %}
+
+        <div class="buttonspace">
         <form id="action-form" action="{% url 'bj:setup' %}" method="post">
         {% csrf_token %}
             <input type="text" id="player_name" name="player_name" value="{{ table.player_name }}" hidden>
-            <input type="submit" id="stand" value="Play_again">
+            <input class="game-buttons" type="submit" id="stand" value="Play again">
         </form>
+        </div>
 
     {% else %}
-        <form id="action-form" action="{% url 'bj:hit' table.id %}" method="post">
+        <div class="buttonspace">
+        <form class="action-forms" id="action-form" action="{% url 'bj:hit' table.id %}" method="post">
         {% csrf_token %}
-            <input type="submit" id="hit" value="hit">
+        <input class="game-buttons" type="submit" id="hit" value="hit">
         </form>
 
-        <form id="action-form" action="{% url 'bj:stand' table.id %}" method="post">
+        <form class="action-forms" id="action-form" action="{% url 'bj:stand' table.id %}" method="post">
         {% csrf_token %}
-            <input type="submit" id="stand" value="stand">
+            <input class="game-buttons" type="submit" id="stand" value="stand">
         </form>
+        </div>
     {% endif %}
-
-
+    </div>
 </body>
 </html>

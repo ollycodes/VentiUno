@@ -7,10 +7,60 @@ body {
     background: #000;
     font-family: EB Garamond;
     color: #dedede;
-    margin: 0;
+    width: 50%;
+    margin: 10%;
     padding: 0;
     font-size: 16px;
 } 
+
+.wrapper {
+    height: 10rem;
+    display: inline-grid;
+    align-content: center;
+    justify-content: center;
+}
+
+.name-textbox {
+  width: 80%;
+}
+
+.name-form {
+}
+
+.player-win {
+    color: #50C878;
+    font-weight: bold;
+}
+/* is there a simpler method to making a class for every html tag?
+ * is it worthwhile to edit django html forms?
+ *
+ * */
+.dealer-win {
+    color: #E60026;
+    font-weight: bold;
+}
+
+.draw {
+    font-weight: bold;
+}
+
+.buttonspace {
+    margin: 1rem 0 0 2rem;
+}
+
+.game-buttons {
+    padding: 10px 1rem 10px 1rem;
+    border-radius: 10px;
+    font-family: inherit;
+    text-align: center;
+    /* there's padding around the body(?) and extra space everywhere*/
+    color: inherit;
+    background: inherit;
+}
+
+.action-forms {
+    display: inline;
+}
 
 h1 {
     padding-left: 2rem;
@@ -34,12 +84,4 @@ li {
 p {
     padding-left: 2rem;
     margin: 1rem 0 0 0;
-}
-
-form {
-    margin: 1rem 0 0 2rem;
-}
-
-input {
-    padding: 10px;
 }

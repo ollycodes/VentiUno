@@ -36,10 +36,10 @@ class Game:
         if self.player_total == self.dealer_total:
             return "Draw!"
         elif self.player_total > self.dealer_total and self.player_total <= 21:
-            return "player won!"
+            return "player won"
         elif self.dealer_total > 21:
-            return "player won!"
-        return "dealer won!"
+            return "player won"
+        return "Dealer won!"
 
     def check(self):
         if self.player_total >= 21:

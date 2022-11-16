@@ -13,14 +13,16 @@
 </head>
 
 <body>
+    <div class="wrapper">
     <header>
         <h1 id="title">Blackjack</h1>
     </header>
 
-    <form id="name-form" action="{% url 'bj:setup' %}" method="post">
+    <form class="name-form" id="name-form" action="{% url 'bj:setup' %}" method="post">
         {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit">
+        <br>{{ form }}
+        <br><input class="name-textbox" type="submit" value="Submit">
     </form>
+    </div>
 </body>
 </html>
