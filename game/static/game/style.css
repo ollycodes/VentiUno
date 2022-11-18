@@ -7,81 +7,89 @@ body {
     background: #000;
     font-family: EB Garamond;
     color: #dedede;
-    width: 50%;
-    margin: 10%;
-    padding: 0;
     font-size: 16px;
+    margin:0;
 } 
 
+label {
+    display: block;
+    margin-bottom: 5px;
+    max-width: 100%;
+}
+
+h1, h2 {
+    margin: 0 0 0 0;
+    padding: 5px 0;
+}
+
+
+p {
+    margin: 0 0 15px 0;
+    padding-left: 1rem;
+}
+
+.hand {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card {
+    border: solid 1px;
+    border-radius: 10px;
+    width: 22.5vw;
+    height: 35vw;
+    max-width: 11.25rem;
+    max-height: 17.5rem;
+    margin: 5px;
+    transition: box-shadow 0.5s, transform 0.1s;
+}
+
+.card:hover {
+    box-shadow: 0 0px 20px 2px pink;
+    transform: translate(0px, -5px);
+}
+
+
 .wrapper {
-    height: 10rem;
-    display: inline-grid;
+    display: grid;
     align-content: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+
+.button-box {
+    margin: 0;
+    display: flex;
     justify-content: center;
 }
 
-.name-textbox {
-  width: 80%;
+.game-action-form {
+    display: inline-grid;
+    margin: 0;
+    padding: 0;
 }
 
-.name-form {
-}
 
-.player-win {
-    color: #50C878;
-    font-weight: bold;
-}
-/* is there a simpler method to making a class for every html tag?
- * is it worthwhile to edit django html forms?
- *
- * */
-.dealer-win {
-    color: #E60026;
-    font-weight: bold;
-}
-
-.draw {
-    font-weight: bold;
-}
-
-.buttonspace {
-    margin: 1rem 0 0 2rem;
-}
-
-.game-buttons {
+.game-action-button {
     padding: 10px 1rem 10px 1rem;
     border-radius: 10px;
     font-family: inherit;
     text-align: center;
-    /* there's padding around the body(?) and extra space everywhere*/
     color: inherit;
     background: inherit;
 }
 
-.action-forms {
-    display: inline;
+.outcome {
+    font-weight: bold;
 }
 
-h1 {
-    padding-left: 2rem;
-    margin: 1rem 0 0 0;
+.win {
+    color: #50C878;
 }
 
-a {
-    color: #eeb9b9;
+.lose {
+    color: #E60026;
 }
 
-ul {
-    margin: 0;
-}
 
-li {
-    list-style-type: none;
-    margin: 2px 0px;
-    padding-left: 1rem;
-}
-
-p {
-    padding-left: 2rem;
-    margin: 1rem 0 0 0;
-}

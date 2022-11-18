@@ -8,21 +8,17 @@
     <meta charset="utf-8">
     <meta name="description" content="A simple game of blackjack.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Blackjack</title>
 </head>
 
 <body>
     <div class="wrapper">
-    <header>
-        <h1 id="title">Blackjack</h1>
-    </header>
-
-    <form class="name-form" id="name-form" action="{% url 'bj:setup' %}" method="post">
-        {% csrf_token %}
-        <br>{{ form }}
-        <br><input class="name-textbox" type="submit" value="Submit">
-    </form>
+        <h1>Blackjack</h1>
+        <form class="game-action-form" action="{% url 'bj:setup' %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input class="game-action-button" type="submit" value="Submit">
+        </form>
     </div>
 </body>
 </html>

@@ -14,57 +14,66 @@
 
 <body>
     <div class="wrapper">
-    <h1> Dealer's hand</h1>
+    <h1>Blackjack</h1>
+    <h2> Dealer's hand</h2>
             {% if game.is_finished %}
-            <ul>
-                {% for card in table.dealer_hand %}
-                <li>{{ card.name }}</li>
-                {% endfor %}
-            </ul>
-            <p>Dealer's total: {{ game.dealer_total }}</p>
+            <div class="hand">
+                    {% for card in table.dealer_hand %}
+                    <div class="card">
+                        <p>{{ card.name }}</p>
+                    </div>
+                    {% endfor %}
+            </div>
+                <p>Dealer's total: {{ game.dealer_total }}</p>
             
             {% else %}
-            <ul>
-                <li>{{ table.dealer_hand.0.name }}</li>
-            </ul>
+            <div class="hand">
+                <div class="card">
+                    <p>{{ table.dealer_hand.0.name }}</p>
+                </div>
+            </div>
+
+
             {% endif %}
 
-    <h1> {{ table.player_name }}'s hand</h1>
-            <ul>
+    <h2> {{ table.player_name }}'s hand</h2>
+            <div class="hand">
                 {% for card in table.player_hand %}
-                <li>{{ card.name }}</li>
+                    <div class="card">
+                        <p>{{ card.name }}</p>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
             <p>player total: {{ game.player_total }}</p>
 
     {% if game.is_finished %}
         {% if game.winner == "player won" %}
-            <p class="player-win">{{ table.player_name }} won!</p>
+            <p class="outcome win">{{ table.player_name }} won!</p>
         {% elif game.winner == "Dealer won!" %}
-            <p class="dealer-win">{{ game.winner }}</p>
+            <p class="outcome lose">{{ game.winner }}</p>
         {% else %}
-            <p class="draw">{{ game.winner }}</p>
+            <p class="outcome">{{ game.winner }}</p>
         {% endif %}
 
-        <div class="buttonspace">
-        <form id="action-form" action="{% url 'bj:setup' %}" method="post">
-        {% csrf_token %}
-            <input type="text" id="player_name" name="player_name" value="{{ table.player_name }}" hidden>
-            <input class="game-buttons" type="submit" id="stand" value="Play again">
-        </form>
+        <div class="button-box">
+            <form class="game-action-form" action="{% url 'bj:setup' %}" method="post">
+            {% csrf_token %}
+                <input type="text" name="player_name" value="{{ table.player_name }}" hidden>
+                <input class="game-action-button" type="submit" value="Play again">
+            </form>
         </div>
 
     {% else %}
-        <div class="buttonspace">
-        <form class="action-forms" id="action-form" action="{% url 'bj:hit' table.id %}" method="post">
-        {% csrf_token %}
-        <input class="game-buttons" type="submit" id="hit" value="hit">
-        </form>
+        <div class="button-box">
+            <form class="game-action-form" action="{% url 'bj:hit' table.id %}" method="post">
+            {% csrf_token %}
+                <input class="game-action-button" type="submit" id="hit" value="hit">
+                </form>
 
-        <form class="action-forms" id="action-form" action="{% url 'bj:stand' table.id %}" method="post">
-        {% csrf_token %}
-            <input class="game-buttons" type="submit" id="stand" value="stand">
-        </form>
+            <form class="game-action-form" action="{% url 'bj:stand' table.id %}" method="post">
+            {% csrf_token %}
+                <input class="game-action-button" type="submit" id="stand" value="stand">
+            </form>
         </div>
     {% endif %}
     </div>
