@@ -5,6 +5,10 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="{% static 'game/style.css' %}">
+    <link 
+        rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+        />
     <meta charset="utf-8">
     <meta name="description" content="A simple game of blackjack.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,8 +23,8 @@
             {% if game.is_finished %}
             <div class="hand">
                     {% for card in table.dealer_hand %}
-                    <div class="card">
-                        <p>{{ card.name }}</p>
+                    <div>
+                        <img class="card" src="{% static 'game/svgs/fronts/' %}{{ card.file_name }}" alt="{{ card.name }}">
                     </div>
                     {% endfor %}
             </div>
@@ -28,9 +32,10 @@
             
             {% else %}
             <div class="hand">
-                <div class="card">
-                    <p>{{ table.dealer_hand.0.name }}</p>
+                <div>
+                    <img class="card" src="{% static 'game/svgs/fronts/' %}{{game.dealer_hand.0.file_name}}" alt="{{ game.dealer_hand.0.name }}">
                 </div>
+                <img class="card" src="{% static 'game/svgs/backs/abstract.svg' %}">
             </div>
 
 
@@ -39,8 +44,8 @@
     <h2> {{ table.player_name }}'s hand</h2>
             <div class="hand">
                 {% for card in table.player_hand %}
-                    <div class="card">
-                        <p>{{ card.name }}</p>
+                    <div>
+                        <img class="card animate__animated animate__flipInY" src="{% static 'game/svgs/fronts/' %}{{ card.file_name }}" alt="{{ card.name }}">
                     </div>
                 {% endfor %}
             </div>

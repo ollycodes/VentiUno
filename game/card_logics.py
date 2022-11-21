@@ -1,21 +1,21 @@
 import random
 from dataclasses import dataclass
 
-SUITS = {'Hearts', 'Diamonds', 'Spades', 'Clubs'}
+SUITS = {'hearts', 'diamonds', 'spades', 'clubs'}
 RANKS = {
-    'Ace': 1,
-    'Two': 2,
-    'Three': 3,
-    'Four': 4,
-    'Five': 5,
-    'Six': 6,
-    'Seven': 7,
-    'Eight': 8,
-    'Nine': 9,
-    'Ten': 10,
-    'Jack': 10,
-    'Queen': 10,
-    'King': 10
+    'ace': 1,
+    'two': 2,
+    'three': 3,
+    'four': 4,
+    'five': 5,
+    'six': 6,
+    'seven': 7,
+    'eight': 8,
+    'nine': 9,
+    'ten': 10,
+    'jack': 10,
+    'queen': 10,
+    'king': 10
     }
 
 @dataclass
@@ -24,13 +24,15 @@ class Card:
     rank: str
     suit: str
     name: str
+    file_name: str
 
     def to_dict(self):
         return dict(
             deck_id=self.deck_id,
             rank=self.rank,
             suit=self.suit,
-            name=self.name
+            name = self.name,
+            file_name=self.file_name
         )
 
 def generate_deck(number):
@@ -41,7 +43,8 @@ def generate_deck(number):
         for suit in SUITS:
             for rank in RANKS:
                 name = f'{rank} of {suit}'
-                cards.append(Card(num, rank, suit, name))
+                file_name = f'{suit}_{rank}.svg'
+                cards.append(Card(num, rank, suit, name, file_name))
     random.shuffle(cards)
     return cards
 
