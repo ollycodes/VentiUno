@@ -79,16 +79,15 @@ p {
     background: inherit;
 }
 
-.outcome {
+.won, .Draw {
     font-weight: bold;
 }
 
-.win {
+.You {
     color: #50C878;
 }
 
-.lose {
+.Dealer {
     color: #E60026;
 }
-
 

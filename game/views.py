@@ -18,6 +18,17 @@ def setup(request):
         form = forms.TableForm()
         return render(request, 'game/index.html', {'form': form})
 
+def play_again(request, pk):
+    if request.method == 'POST':
+        table = get_object_or_404(models.Table, pk=pk)
+        game = table_logics.Game.load(table)
+        game.check_deck()
+        game.save(table)
+        return redirect("bj:game", pk=table.pk)
+    else:
+        form = forms.TableForm()
+        return render(request, 'game/index.html', {'form': form})
+
 def game(request, pk):
     table = get_object_or_404(models.Table, pk=pk)
     game = table_logics.Game.load(table)
@@ -34,7 +45,7 @@ def hit(request, pk):
 def stand(request, pk):
     table = get_object_or_404(models.Table, pk=pk)
     game = table_logics.Game.load(table)
-    game.is_finished = True
+    game.action = 1
     game.stand(table)
     game.save(table)
     return redirect("bj:game", pk=pk)

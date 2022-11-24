@@ -8,7 +8,7 @@ class Game:
     deck: t.List[card_logics.Card]
     player_hand: t.List[card_logics.Card]
     dealer_hand: t.List[card_logics.Card]
-    is_finished: bool = False
+    action: int = 0
 
     def _total(self, hand):
         hand_total = 0
@@ -32,18 +32,26 @@ class Game:
         return self._total("dealer_hand")
 
     @property
+    def player_card_quantity(self):
+        return len(self.player_hand)
+
+    @property
+    def dealer_card_quantity(self):
+        return len(self.dealer_hand)
+
+    @property
     def winner(self):
         if self.player_total == self.dealer_total:
-            return "Draw!"
+            return "Draw"
         elif self.player_total > self.dealer_total and self.player_total <= 21:
-            return "player won"
+            return "You won"
         elif self.dealer_total > 21:
-            return "player won"
-        return "Dealer won!"
+            return "You won"
+        return "Dealer won"
 
     def check(self):
         if self.player_total >= 21:
-            self.is_finished = True
+            self.action = 2
 
     @classmethod
     def create(cls):
@@ -58,20 +66,51 @@ class Game:
 
     @classmethod
     def load(cls, table):
+        '''
         # run in views; loads cards into game instance
         deck = card_logics.cards_from_json(table.deck)
         player_hand = card_logics.cards_from_json(table.player_hand)
         dealer_hand = card_logics.cards_from_json(table.dealer_hand)
-        is_finished = table.is_finished
-        return cls(deck, player_hand, dealer_hand, is_finished)
+        action = table.action
+        return cls(deck, player_hand, dealer_hand, action)
+        '''
+
+    def check_deck(self):
+        self.action = 0
+        if len(self.deck) <= 52:
+            self.deck = card_logics.generate_deck(2)
+            self.player_hand = card_logics.draw_cards(self.deck, 2)
+            self.dealer_hand = card_logics.draw_cards(self.deck, 2)
+            self.check()
+        else:
+            self.player_hand = card_logics.draw_cards(self.deck, 2)
+            self.dealer_hand = card_logics.draw_cards(self.deck, 2)
 
     def save(self, table):
+        table.game_data = dict(
+            deck=card_logics.cards_to_json(self.deck),
+            player_hand=card_logics.cards_to_json(self.player_hand),
+            dealer_hand=card_logics.cards_to_json(self.dealer_hand),
+            action=self.action
+        )
+
         # saves card_logics. to views table object
+        #
+        # gf!!!!!
+        # here's how to do the thing
+        # table.giant_data_field = dict(
+        #     deck=card_logics.cards_to_json(self.deck),
+        #     player_hand=card_logics.cards_to_json(self.player_hand),
+        #     dealer_hand=card_logics.cards_to_json(self.dealer_hand),
+        #     action=self.action
+        # )
+        '''
         table.deck = card_logics.cards_to_json(self.deck)
         table.player_hand = card_logics.cards_to_json(self.player_hand)
         table.dealer_hand = card_logics.cards_to_json(self.dealer_hand)
-        table.is_finished = self.is_finished
+        table.action = self.action
         table.save()
+        '''
 
     def hit(self):
         self.player_hand += card_logics.draw_cards(self.deck, 1)
