@@ -18,23 +18,23 @@
 
 <body>
     <div class="wrapper">
-    <h1>Blackjack</h1>
-    <h2> Dealer's hand</h2>
-            {% if game.action is not 0 %}
+        <h1>Blackjack</h1>
+        <h2> Dealer's hand</h2>
+        {% if game.action == "stand" or game.player_total >= 21 %}
             <div class="hand">
                     <div>
                         <img class="card" 
-                        src="{% static 'game/svgs/fronts/' %}{{ table.dealer_hand.0.file_name }}" 
-                        alt="{{ table.dealer_hand.0.name }}">
+                        src="{% static 'game/svgs/fronts/' %}{{ game.dealer_hand.0.file_name }}" 
+                        alt="{{ game.dealer_hand.0.name }}">
                     </div>
                     <div>
-                        <img class="card animate__animated animate__flipInY" 
-                        src="{% static 'game/svgs/fronts/' %}{{ table.dealer_hand.1.file_name }}" 
-                        alt="{{ table.dealer_hand.1.name }}">
+                        <img class="card card_flip" 
+                        src="{% static 'game/svgs/fronts/' %}{{ game.dealer_hand.1.file_name }}" 
+                        alt="{{ game.dealer_hand.1.name }}">
                     </div>
-                    {% for card in table.dealer_hand|slice:"2:" %}
+                    {% for card in game.dealer_hand|slice:"2:" %}
                     <div>
-                        <img class="card animate__animated animate__slideInRight" 
+                        <img class="card card_draw" 
                         src="{% static 'game/svgs/fronts/' %}{{ card.file_name }}" 
                         alt="{{ card.name }}">
                     </div>
@@ -42,22 +42,22 @@
             </div>
             
             {% else %}
-            <div class="hand">
-                <div>
-                    <img class="card" 
-                    src="{% static 'game/svgs/fronts/' %}{{game.dealer_hand.0.file_name}}" 
-                    alt="{{ game.dealer_hand.0.name }}">
+                <div class="hand">
+                    <div>
+                        <img class="card" 
+                        src="{% static 'game/svgs/fronts/' %}{{game.dealer_hand.0.file_name}}" 
+                        alt="{{ game.dealer_hand.0.name }}">
+                    </div>
+                    <div>
+                        <img class="card" src="{% static 'game/svgs/backs/abstract.svg' %}">
+                    </div>
                 </div>
-                <div>
-                    <img class="card" src="{% static 'game/svgs/backs/abstract.svg' %}">
-                </div>
-            </div>
             {% endif %}
 
     <h2> {{ table.player_name }}'s hand</h2>
             <div class="hand">
-                {% if game.action is 0 %}
-                    {% for card in table.player_hand %}
+                {% if game.action == "stand" %}
+                    {% for card in game.player_hand %}
                         <div>
                             <img class="card" 
                             src="{% static 'game/svgs/fronts/' %}{{ card.file_name }}" 
@@ -65,7 +65,7 @@
                         </div>
                     {% endfor %}
                 {% else %}
-                    {% for card in table.player_hand|slice:":-1" %}
+                    {% for card in game.player_hand|slice:":-1" %}
                         <div>
                             <img class="card" 
                             src="{% static 'game/svgs/fronts/' %}{{ card.file_name }}" 
@@ -73,9 +73,9 @@
                         </div>
                     {% endfor %}
 
-                    {% for card in table.player_hand|slice:"-1:" %}
+                    {% for card in game.player_hand|slice:"-1:" %}
                         <div>
-                            <img class="animate__animated animate__slideInRight card" 
+                            <img class="card card_draw" 
                             src="{% static 'game/svgs/fronts/' %}{{ card.file_name }}" 
                             alt="{{ card.name }}">
                         </div>
@@ -83,45 +83,44 @@
                 {% endif %}
             </div>
 
-    {% if game.action is not 0 %}
-    <p class="{{ game.winner }}">{{ game.winner }}!</p>
+            {% if game.action == "stand" or game.player_total >= 21 %}
+                <p class="{{ game.winner }}">{{ game.winner }}!</p>
 
-        <div class="button-box">
-            <form class="game-action-form" 
-                action="{% url 'bj:play_again' table.id %}" method="post">
-                {% csrf_token %}
-                
-                <input type="text" name="player_name" 
-                value="{{ table.player_name }}" hidden>
-                
-                <input class="game-action-button" 
-                type="submit" value="Play again">
-            </form>
-        </div>
+                <div class="button-box">
+                    <form class="game-action-form" 
+                        action="{% url 'bj:play_again' table.id %}" method="post">
+                        {% csrf_token %}
+                        
+                        <input type="text" name="player_name" 
+                        value="play_again" hidden>
+                        
+                        <input class="game-action-button" 
+                        type="submit" value="Play again">
+                    </form>
+                </div>
+            {% else %}
+                <div class="button-box">
+                    <form class="game-action-form" 
+                        action="{% url 'bj:hit' table.id %}" 
+                        method="post">
 
-    {% else %}
-        <div class="button-box">
-            <form class="game-action-form" 
-                action="{% url 'bj:hit' table.id %}" 
-                method="post">
+                        {% csrf_token %}
+                        <input class="game-action-button" 
+                        type="submit" id="hit" value="hit">
 
-                {% csrf_token %}
-                <input class="game-action-button" 
-                type="submit" id="hit" value="hit">
+                    </form>
 
-            </form>
+                    <form class="game-action-form" 
+                        action="{% url 'bj:stand' table.id %}" 
+                        method="post">
 
-            <form class="game-action-form" 
-                action="{% url 'bj:stand' table.id %}" 
-                method="post">
+                        {% csrf_token %}
+                        <input class="game-action-button" 
+                        type="submit" id="stand" value="stand">
 
-                {% csrf_token %}
-                <input class="game-action-button" 
-                type="submit" id="stand" value="stand">
-
-            </form>
-        </div>
-    {% endif %}
+                    </form>
+                </div>
+            {% endif %}
     </div>
 </body>
 </html>

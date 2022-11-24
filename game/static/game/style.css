@@ -22,7 +22,6 @@ h1, h2 {
     padding: 5px 0;
 }
 
-
 p {
     margin: 0 0 15px 0;
     padding-left: 1rem;
@@ -35,12 +34,24 @@ p {
 
 .card {
     border-radius: 10px;
-    width: 26vw;
-    height: 37vw;
+    /* width: 26vw;
+    height: 37vw; */
+    width: 8.26vw;
+    height: 11.74vw;
     max-width: 11rem;
     max-height: 15.65rem;
     margin: 5px;
     transition: box-shadow 0.5s, transform 0.1s;
+}
+
+.card_flip {
+    animation: flipInY;
+    animation-duration: 1.5s;
+}
+
+.card_draw {
+    animation: slideInRight;
+    animation-duration: 1s;
 }
 
 .card:hover {
@@ -48,14 +59,12 @@ p {
     transform: translate(0px, -5px);
 }
 
-
 .wrapper {
     display: grid;
     align-content: center;
     justify-content: center;
     min-height: 100vh;
 }
-
 
 .button-box {
     margin: 0;
@@ -68,7 +77,6 @@ p {
     margin: 0 1rem;
     padding: 0;
 }
-
 
 .game-action-button {
     padding: 10px 1rem 10px 1rem;
