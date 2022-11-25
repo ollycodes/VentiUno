@@ -10,6 +10,9 @@ def setup(request):
     if request.method == 'POST':
         partial_form = forms.TableForm(request.POST)
         if partial_form.is_valid():
+            # name = request.POST.get("player_name")
+            # table = get_object_or_404(models.Table, player_name=name)
+            # print(f"table found: {table}")
             table = partial_form.save(commit=False)
             game = table_logics.Game.create()
             game.save(table)

@@ -100,3 +100,24 @@ class Game:
         self.action = "stand"
         while self.dealer_total < 17:
             self.dealer_hand += card_logics.draw_cards(self.deck, 1)
+
+def generate_username():
+    '''
+    retrieves one random adjective and noun.
+    '''
+    import sqlite3, random
+
+    con = sqlite3.connect("name_gen.db")
+    cur = con.cursor()
+
+    tables = ["Adjectives", "Nouns"]
+    username = ""
+
+    for table in tables:
+        cur.execute(f"SELECT Word FROM {table}")
+        rows = cur.fetchall()
+        word = rows[random.randrange(len(rows))]
+        word = ",".join(word)
+        word = word.replace(" ","")
+        username += word.capitalize()
+    return username
