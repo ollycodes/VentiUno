@@ -30,17 +30,15 @@ p {
 .hand {
     display: flex;
     flex-wrap: wrap;
+    margin: 5px;
 }
 
 .card {
     border-radius: 10px;
-    /* width: 26vw;
-    height: 37vw; */
     width: 8.26vw;
     height: 11.74vw;
     max-width: 11rem;
     max-height: 15.65rem;
-    margin: 5px;
     transition: box-shadow 0.5s, transform 0.1s;
 }
 
