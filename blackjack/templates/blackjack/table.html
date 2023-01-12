@@ -1,0 +1,38 @@
+{% load static %}
+<h2> Dealer's hand</h2>
+<div class="hand">
+    <div><img class="card" 
+              src="{% static 'blackjack/svgs/fronts/' %}{{game.dealer_hand.0.file_name}}" 
+              alt="{{ game.dealer_hand.0.name }}">
+    </div>
+    <div><img class="card" src="{% static 'blackjack/svgs/backs/abstract.svg' %}"></div>
+</div>
+
+<h2> {{ table.username }}'s hand</h2>
+<div class="hand">
+    {% for card in game.player_hand|slice:":-1" %}
+        <div><img class="card" 
+                  src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
+                  alt="{{ card.name }}">
+        </div>
+    {% endfor %}
+    {% for card in game.player_hand|slice:"-1:" %}
+        <div><img class="card card_draw" 
+                  src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
+                  alt="{{ card.name }}">
+        </div>
+    {% endfor %}
+</div>
+
+<div class="button-box">
+    <form class="game-action-form" hx-post="{% url 'blackjack:hit_or_bust' table.id %}" 
+        hx-target="#table" hx-swap="innerHTML" method="post">
+        {% csrf_token %}
+        <input class="game-action-button" type="submit" id="hit" value="hit">
+    </form>
+    <form class="game-action-form" hx-post="{% url 'blackjack:stand' table.id %}" 
+        hx-target="#table" hx-swap="innerHTML" method="post">
+        {% csrf_token %}
+        <input class="game-action-button" type="submit" id="stand" value="stand">
+    </form>
+</div>

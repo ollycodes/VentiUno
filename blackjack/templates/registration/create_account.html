@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Create Account{% endblock title %}
+
+{% block content %}
+{% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+<form class='game-action-form' method="post">
+    {% csrf_token %}
+    <!--  form.as_p -->
+    <table>
+    <tr>
+        <td>{{ form.username.label_tag }}</td>
+        <td>{{ form.username }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.password1.label_tag }}</td>
+        <td>{{ form.password1 }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.password2.label_tag }}</td>
+        <td>{{ form.password2 }}</td>
+    </tr>
+    </table>
+
+    <input class='game-action-button' type="submit" value="Create Account">
+    <input type="hidden" name="next" value="Create_Account">
+    </form>
+
+{% endblock %}

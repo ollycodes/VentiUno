@@ -1,0 +1,23 @@
+<h2> Dealer's hand</h2>
+<div class="hand">
+    <div><img class="card" 
+              src="{% static 'blackjack/svgs/fronts/' %}{{game.dealer_hand.0.file_name}}" 
+              alt="{{ game.dealer_hand.0.name }}">
+    </div>
+    <div><img class="card" src="{% static 'blackjack/svgs/backs/abstract.svg' %}"></div>
+</div>
+
+<h2> {{ table.username }}'s hand</h2>
+    {% for card in game.player_hand|slice:":-1" %}
+        <div><img class="card" 
+                  src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
+                  alt="{{ card.name }}">
+        </div>
+    {% endfor %}
+    {% for card in game.player_hand|slice:"-1:" %}
+        <div><img class="card card_draw" 
+                  src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
+                  alt="{{ card.name }}">
+        </div>
+    {% endfor %}
+</div>

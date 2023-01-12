@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ table.username }}'s Table{% endblock title %}
+
+
+{% block content %}
+<div hx-get="{% url 'blackjack:table' table.id %}" class="table">
+
+<div class="button-box">
+    <form class="game-action-form" action="{% url 'blackjack:hit_or_bust' table.id %}" method="post">
+        {% csrf_token %}
+        <input class="game-action-button" type="submit" id="hit" value="hit">
+    </form>
+    <form class="game-action-form" action="{% url 'blackjack:stand' table.id %}" method="post">
+        {% csrf_token %}
+        <input class="game-action-button" type="submit" id="stand" value="stand">
+    </form>
+</div>
+{% endblock content %}

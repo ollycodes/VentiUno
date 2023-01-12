@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="table"
+    hx-get="{% url 'blackjack:table' id %}" 
+    hx-trigger="load">
+    <p>loading game</p>
+</div>
+{% endblock content %}
