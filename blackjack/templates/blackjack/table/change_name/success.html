@@ -1,0 +1,4 @@
+<div id="name_form" hx-target="this" hx-swap="outerHTML">
+    <h1>{{ table.name }}</h1>
+    <button hx-get="{% url 'blackjack:change_name' pk %}"> click to edit </button>
+</div>

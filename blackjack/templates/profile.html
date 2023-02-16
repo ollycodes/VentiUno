@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Profile{% endblock title %}
+
+{% block content %}
+<p>Welcome back {{ user.username }}</p>
+<h2>Active games</h2>
+<div class="table-hand">
+    {% for hand in hands %}
+    <div class="table-card">
+        <a href='{% url 'blackjack:game' hand.table.pk %}'>
+        <img class="transparent-card" 
+              src="{% static 'blackjack/svgs/backs/abstract.svg' %}"
+              alt="{{ hand.table.name }}">
+        <p class="text-over-image">{{ hand.table.name }}</p>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<p><a href='{% url 'blackjack:new_game' %}'>New Game</a></p>
+<p><a href='{% url 'blackjack:delete_view' %}'>Delete Games</a></p>
+<p><a href='{% url 'blackjack:logout' %}'>Log out</a></p>
+{% endblock %}

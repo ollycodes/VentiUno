@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Delete Games{% endblock title %}
+
+{% block content %}
+<div class="table-hand">
+    {% for hand in hands %}
+        <div class="table-card">
+            <img class="transparent-card" 
+                  src="{% static 'blackjack/svgs/backs/abstract.svg' %}"
+                  alt="table {{ hand.table.pk }}">
+            <a href="{% url 'blackjack:delete_game' hand.table.pk %}">
+            {% if hand.table.name %}
+            <p class="text-over-image">delete table {{ hand.table.name }}</p>
+            {% else %}
+            <p class="text-over-image">delete table {{ hand.table.pk }}</p>
+            {% endif %}
+            </a>
+        </div>
+    {% endfor %}
+</div>
+
+<p><a href="{% url 'blackjack:profile' %}">back to profile</a></p>
+{% endblock %}

@@ -1,8 +1,0 @@
-{% extends 'base.html' %}
-{% block title %}Profile{% endblock title %}
-
-{% block content %}
-<p>Welcome back {{ user.username }}</p>
-<p><a href='{% url 'blackjack:new_game' %}'>New Game</a></p>
-<p><a href='{% url 'blackjack:logout' %}'>Log out</a></p>
-{% endblock %}

@@ -1,5 +1,5 @@
-import random
 from dataclasses import dataclass
+import random
 
 SUITS = {'hearts', 'diamonds', 'spades', 'clubs'}
 RANKS = {

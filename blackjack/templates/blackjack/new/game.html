@@ -1,8 +1,0 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}{{ table.username }}'s Table{% endblock title %}
-
-{% block content %}
-<div id="table" hx-get="{% url 'blackjack:table' table.id %}" class="table">
-{% endblock content %}

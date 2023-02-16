@@ -1,15 +1,12 @@
 from django import forms
-from django.contrib.auth.models import User
-from .models import *
+from .models import Guest, Table
 
 class GuestForm(forms.ModelForm):
     class Meta:
-        model = GuestTable
+        model = Guest
         fields = ["username"]
 
-class UserUpdateForm(forms.ModelForm):
-	email = forms.EmailField()
-
-	class Meta:
-		model = User
-		fields = ['username', 'email']
+class TableNameForm(forms.ModelForm):
+    class Meta:
+        model = Table
+        fields = ["name"]

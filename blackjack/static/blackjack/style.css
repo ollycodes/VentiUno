@@ -27,6 +27,40 @@ p {
     padding-left: 1rem;
 }
 
+
+.table-hand {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 100px;
+}
+
+.text-over-image {
+    position: relative;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    top: -75px;
+}
+
+.transparent-card {
+    opacity: 0.8;
+    border-radius: 10px;
+    width: 8.26vw;
+    height: 11.74vw;
+    max-width: 11rem;
+    max-height: 15.65rem;
+    transition: box-shadow 0.5s, transform 0.1s;
+}
+
+.table-card {
+    animation: slideInRight;
+    animation-duration: 1s;
+}
+
+.table-card:hover {
+    transform: translate(0px, -5px);
+}
+
 .hand {
     display: flex;
     flex-wrap: wrap;
