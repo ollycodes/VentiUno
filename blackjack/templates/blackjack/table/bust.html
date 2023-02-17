@@ -1,9 +1,9 @@
 {% load static %}
-{% if game.name %}
-    <h1>{{ game.name }}</h1>
-{% else %}
-    <h1>table {{ pk }}</h1>
-{% endif %}
+<div id="name_form" class="name-form" hx-target="this" hx-swap="outerHTML">
+    <h1 class="table-name">{{ game.name }}</h1>
+    <button class="smaller-action-button"
+        hx-get="{% url 'blackjack:change_name' pk %}">edit name</button>
+</div>
 <h2> Dealer's hand</h2>
 <div class="hand">
     <div><img class="card" 

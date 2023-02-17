@@ -72,7 +72,6 @@ def profile(request):
 # GAME VIEWS
 @login_required
 def create_new_game(request):
-    # create db enty objects< and save them
     db_table_obj = Table.objects.create(deck={})
     db_table_obj.name = f"Table {db_table_obj.pk}"
     db_table_obj.save()
@@ -81,9 +80,6 @@ def create_new_game(request):
     name = request.user.username
     db_player_obj = Hand.objects.create(table=db_table_obj, profile_type='PL', name=name, hand={})
     db_player_obj.save()
-
-    # # save table object as a session id
-    # request.session['current_game'] = db_table_obj.pk
     return redirect('blackjack:initial_draw', pk=db_table_obj.pk)
         
 
@@ -134,7 +130,6 @@ def change_name(request, pk):
             return render(request, 'blackjack/table/change_name/success.html', dict(table=table, pk=pk))
         else:
             return render(request, 'blackjack/table/change_name/form.html', dict(form=form, pk=pk))
-
 
 def action(request, pk):
     name = request.user.username

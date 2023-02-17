@@ -119,6 +119,24 @@ p {
     background: inherit;
 }
 
+.smaller-action-button {
+    display: inline-block;
+    padding: 5px 0.5rem 5px 0.5rem;
+    border-radius: 5px;
+    font-family: inherit;
+    text-align: center;
+    color: inherit;
+    background: inherit;
+}
+
+.table-name {
+    display: inline-block;
+}
+
+.name-form {
+    justify-content: space-between;
+}
+
 /* winner format */
 .won, .Draw {
     font-weight: bold;

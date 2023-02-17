@@ -15,8 +15,6 @@ class Table(models.Model):
 # create a list of pending_players, based on those who join
 # allow host to lock entry or keep open
 
-
-
 # new feature ideas
 # provide options to change rules of solo/multiplayer game
 # provide options to play as dealer maybe!
