@@ -1,0 +1,7 @@
+<form class="game-action-form" 
+      hx-post="{% url 'blackjack:guest_form' %}">
+    <!-- hx-target="this" hx-swap="outerHTML"> -->
+    {{ form.as_p }}
+    <input name="action" class="game-action-button" type="submit" value="Play Blackjack"/>
+    {% csrf_token %}
+</form>

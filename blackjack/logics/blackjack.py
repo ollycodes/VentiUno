@@ -7,7 +7,6 @@ class GameLogic:
     """ Main blackjack logic class. """
     name: str
     state: str
-    # states: pending player, stand, hit, bust,
     deck: t.List[cl.Card]
     player_hand: t.List[cl.Card]
     dealer_hand: t.List[cl.Card]
@@ -25,7 +24,6 @@ class GameLogic:
             if card_value == 1:
                 has_ace = True
             hand_total += card_value
-
         if hand_total <= 11 and has_ace:
             hand_total += 10
         return hand_total
@@ -89,8 +87,8 @@ class GameLogic:
     @classmethod
     def load(cls, db_table_obj, db_player_obj, db_dealer_obj):
         """run in views. loads three db model objects into GameLogic class object."""
-        name = f'table {db_table_obj.pk}' if db_table_obj.name == '' else db_table_obj.name
-        state = db_table_obj.name
+        name = db_table_obj.name
+        state = db_table_obj.state
         deck = cl.cards_from_json(db_table_obj.deck)
         player_hand = cl.cards_from_json(db_player_obj.hand)
         dealer_hand = cl.cards_from_json(db_dealer_obj.hand)

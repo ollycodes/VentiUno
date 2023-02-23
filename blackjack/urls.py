@@ -3,11 +3,10 @@ from . import views
 
 app_name = "blackjack"
 urlpatterns = [
-    path('', views.create_guest, name='index'),
-    path('guest/create', views.create_guest, name='guestform'),
-    path('guest/profile', views.guest_profile, name='guest_profile'),
+    path('', views.landing_page,name='home'),
+    path('guest/profile/', views.guest_profile, name='guest_profile'),
     path('account/create/', views.create_user, name='create_account'),
-    path('account/profile/', views.profile, name='profile'),
+    path('account/profile/', views.user_profile, name='profile'),
     path('account/', include('django.contrib.auth.urls')),
     path('game/create', views.create_new_game, name='new_game'),
     path('game/delete/', views.delete_view, name='delete_view'),

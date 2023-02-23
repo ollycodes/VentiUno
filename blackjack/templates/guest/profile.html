@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Guest Profile{% endblock title %}
+
+{% block nav %}
+<nav>
+    <a href='{% url 'blackjack:new_game' %}'>New Game</a>
+    <a href='#'>Join Game</a>
+    <a class= 'justify-right' href='{% url 'blackjack:create_account' %}'>Create Account</a>
+</nav>
+{% endblock nav %}
+
+{% block content %}
+<h2>Welcome back {{ user.username }}</h2>
+<h3>Active games:</h3>
+<div class="table-view-wrapper">
+    {% for hand in hands %}
+    <div class="table-view-card">
+        <a href='{% url 'blackjack:game' hand.table.pk %}'>
+        <img class="transparent-card" 
+              src="{% static 'blackjack/svgs/backs/abstract.svg' %}"
+              alt="{{ hand.table.name }}">
+        <p class="text-over-image">{{ hand.table.name }}</p>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<a href='{% url 'blackjack:delete_view' %}'>Delete Games</a>
+{% endblock content %}

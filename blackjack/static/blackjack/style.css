@@ -1,4 +1,4 @@
-/* BlackJack Style */
+/* Base BlackJack Style */
 *, *:before, *:after {
     box-sizing: border-box;
 }
@@ -11,56 +11,95 @@ body {
     margin:0;
 } 
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    max-width: 100%;
+nav {
+    padding: 1rem;
+    display: flex;
+    border-bottom: 1px solid pink;
 }
 
-h1, h2 {
-    margin: 0 0 0 0;
-    padding: 5px 0;
+nav a {
+    color: #dedede;
+    font-weight: bold;
+    padding: 0 1rem;
 }
 
-p {
-    margin: 0 0 15px 0;
-    padding-left: 1rem;
+.justify-right {
+    margin-left: auto;
 }
 
+h1, h2, h3 {
+    margin: 0.25rem;
+}
 
-.table-hand {
+a {
+    color: #dedede;
+    font-weight: bold;
+}
+
+.content-wrapper {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    margin: 0 5rem;
+}
+
+/* Table styles */
+
+.table-view-wrapper {
     display: flex;
     flex-wrap: wrap;
-    margin: 100px;
 }
 
-.text-over-image {
+.table-view-card {
+    animation: slideInRight;
+    animation-duration: 1s;
+    border-radius: 10px;
+    transition: box-shadow 0.5s, transform 0.1s;
     position: relative;
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    top: -75px;
 }
 
 .transparent-card {
-    opacity: 0.8;
-    border-radius: 10px;
+    opacity: 0.5;
     width: 8.26vw;
     height: 11.74vw;
     max-width: 11rem;
     max-height: 15.65rem;
-    transition: box-shadow 0.5s, transform 0.1s;
+    margin: 5px;
 }
 
-.table-card {
-    animation: slideInRight;
-    animation-duration: 1s;
+.text-over-image {
+    color: white;
+    font-size: 1.5vw;
+    font-weight: bold;
+    opacity: 0.75;
+    overflow: hidden;
+    text-overflow: clip;
+    text-decoration: none;
+    word-break: break-word;
+    top: 50%;
+    left: 50%;
+    width: 8vw;
+    height: 11vw;
+    position: absolute;
+    transform: translate(-50%, -50%);
 }
 
-.table-card:hover {
+.table-view-card:hover {
     transform: translate(0px, -5px);
 }
 
+.table-view-card:hover p {
+}
+
+.main-form {
+    position: relative;
+    left: 50%;
+    top: 50%;
+}
+
+
+
+/* Game Style */
 .hand {
     display: flex;
     flex-wrap: wrap;
@@ -89,13 +128,6 @@ p {
 .card:hover {
     box-shadow: 0 0px 20px 2px #ffd2e5;
     transform: translate(0px, -5px);
-}
-
-.content-wrapper {
-    display: grid;
-    align-content: center;
-    justify-content: center;
-    min-height: 100vh;
 }
 
 .button-box {
@@ -137,7 +169,7 @@ p {
     justify-content: space-between;
 }
 
-/* winner format */
+/* Outcome format */
 .won, .Draw {
     font-weight: bold;
 }
@@ -149,4 +181,3 @@ p {
 .Dealer {
     color: #E60026;
 }
-
