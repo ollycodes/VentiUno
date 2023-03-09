@@ -36,11 +36,42 @@ a {
     font-weight: bold;
 }
 
+img {
+    width: 8.26vw;
+    height: 11.74vw;
+    max-width: 11rem;
+    max-height: 15.65rem;
+}
+
+img:hover {
+    box-shadow: 0 0px 10px 2px black;
+    border-radius: 10px;
+}
+
+.brown-border {
+  background-color: #83481d;
+  background-image: 
+  repeating-radial-gradient(circle at 0 0, transparent 0, #620 3px),
+  repeating-radial-gradient(circle at 100% 100%, transparent 0, #620 3px),
+  repeating-linear-gradient(#3B2200, #920, #3B2200);
+  border-radius: 7px;
+  box-shadow: 0 0 10px #0006; /* Polished look with a shadow */
+  padding: 20px; /* Add some padding to the content */
+  margin: 1%; /* Center the wrapper horizontally */
+}
+
+.brown-border .content-wrapper {
+  border-radius: 1px; /* Smaller rounded corners */
+  padding: 1px; /* Smaller padding to fit inside the wrapper */
+}
+
 .content-wrapper {
     display: grid;
     align-content: center;
     justify-content: center;
-    margin: 0 5rem;
+    background-color: #00674c; /* Casino green color */
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0));
+    box-shadow: inset 2px 2px 100px #0006, inset 2px 2px 7px black;
 }
 
 /* Table styles */
@@ -88,46 +119,50 @@ a {
     transform: translate(0px, -5px);
 }
 
-.table-view-card:hover p {
-}
-
 .main-form {
     position: relative;
     left: 50%;
     top: 50%;
 }
 
-
-
 /* Game Style */
 .hand {
     display: flex;
-    flex-wrap: wrap;
-    margin: 5px;
+    width: 20vw;
+    border: solid 0.5vw #eee;
+    border-radius: 1vw;
+    height: 12.7vw;
 }
 
 .card {
     border-radius: 10px;
-    width: 8.26vw;
-    height: 11.74vw;
-    max-width: 11rem;
-    max-height: 15.65rem;
-    transition: box-shadow 0.5s, transform 0.1s;
+    transition: transform 1s;
+    transform: translateX(calc(-6vw * var(--counter)));
 }
 
-.card_flip {
-    animation: flipInY;
-    animation-duration: 1.5s;
+.card:hover {
+    transform: 
+    translateX(calc(-6vw * var(--counter))) 
+    translateX(-0.5rem) 
+    translateY(-1rem) 
+    rotate(-0.001turn);
+    transition: 0.2s ease-out;
 }
 
-.card_draw {
+.card:hover ~ .card {
+    transform: translateX(calc(-6vw * var(--counter))) translateX(3rem);
+    transition: 0.2s ease-out;
+}
+
+.last-card {
     animation: slideInRight;
     animation-duration: 1s;
 }
 
-.card:hover {
-    box-shadow: 0 0px 20px 2px #ffd2e5;
-    transform: translate(0px, -5px);
+
+.card_flip {
+    animation: flipInY 1s ease-out;
+    transform-origin: translateX(calc(-6vw * var(--counter)));
 }
 
 .button-box {

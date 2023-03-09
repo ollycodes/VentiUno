@@ -4,7 +4,7 @@ from .models import Guest, Table
 class GuestForm(forms.ModelForm):
     class Meta:
         model = Guest
-        fields = ["username"]
+        fields = ["name"]
 
 class TableNameForm(forms.ModelForm):
     class Meta:

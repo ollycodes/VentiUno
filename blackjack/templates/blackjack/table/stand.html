@@ -2,22 +2,25 @@
 <div id="name_form" class="name-form" hx-target="this" hx-swap="outerHTML">
     <h1 class="table-name">{{ game.name }}</h1>
     <button class="smaller-action-button"
-        hx-get="{% url 'blackjack:change_name' pk %}">edit name</button>
+        hx-get="{% url 'blackjack:change_table_name' pk %}">edit name</button>
 </div>
 <h2> Dealer's hand</h2>
 <div class="hand">
-    <div><img class="card" 
+    <div class="card" style="--counter: 0"><img
               src="{% static 'blackjack/svgs/fronts/' %}{{ game.dealer_hand.0.file_name }}" 
               alt="{{ game.dealer_hand.0.name }}">
     </div>
-    <div><img class="card card_flip" 
-              src="{% static 'blackjack/svgs/fronts/' %}{{ game.dealer_hand.1.file_name }}" 
-              alt="{{ game.dealer_hand.1.name }}">
+
+    <div class="card card_flip" style="--counter: 1">
+        <img
+            src="{% static 'blackjack/svgs/fronts/' %}{{ game.dealer_hand.1.file_name }}" 
+            alt="{{ game.dealer_hand.1.name }}">
     </div>
     {% for card in game.dealer_hand|slice:"2:" %}
-    <div><img class="card card_draw" 
-              src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
-              alt="{{ card.name }}">
+    <div class="card last-card" style="--counter: calc({{forloop.counter0}} + 2)">
+        <img 
+            src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
+            alt="{{ card.name }}">
     </div>
     {% endfor %}
 </div>
@@ -25,7 +28,7 @@
 <h2> {{ user.username }}'s hand</h2>
 <div class="hand">
     {% for card in game.player_hand %}
-    <div><img class="card" 
+    <div class="card" style="--counter: {{forloop.counter0}}"><img
               src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
               alt="{{ card.name }}">
     </div>

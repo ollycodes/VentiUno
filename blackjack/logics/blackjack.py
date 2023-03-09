@@ -41,6 +41,14 @@ class GameLogic:
         return len(self.deck)
 
     @property
+    def player_card_count(self):
+        return len(self.player_hand)
+
+    @property
+    def dealer_card_count(self):
+        return len(self.dealer_hand)
+
+    @property
     def winner(self):
         if self.player_total == self.dealer_total:
             return "Draw"
@@ -88,7 +96,7 @@ class GameLogic:
     def load(cls, db_table_obj, db_player_obj, db_dealer_obj):
         """run in views. loads three db model objects into GameLogic class object."""
         name = db_table_obj.name
-        state = db_table_obj.state
+        state = db_player_obj.state
         deck = cl.cards_from_json(db_table_obj.deck)
         player_hand = cl.cards_from_json(db_player_obj.hand)
         dealer_hand = cl.cards_from_json(db_dealer_obj.hand)
@@ -103,7 +111,7 @@ class GameLogic:
         self.save_attr_to_db(table, 'deck')
         self.save_attr_to_db(player, 'player_hand')
         self.save_attr_to_db(dealer, 'dealer_hand')
-        self.save_attr_to_db(table, 'state')
+        self.save_attr_to_db(player, 'state')
 
     def save_name(self, db_objects):
         table = db_objects['table']

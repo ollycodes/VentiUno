@@ -1,5 +1,5 @@
 <form class="game-action-form" 
-    hx-post="{% url 'blackjack:change_name' pk %}" 
+    hx-post="{% url 'blackjack:change_table_name' pk %}" 
     hx-target="this" hx-swap="outerHTML">
     {% csrf_token %}
     {{ form.as_p }}
