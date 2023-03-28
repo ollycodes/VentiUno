@@ -1,45 +1,36 @@
 {% load static %}
-<div id="name_form" class="name-form" hx-target="this" hx-swap="outerHTML">
-    <h1 class="table-name">{{ game.name }}</h1>
-    <button class="smaller-action-button"
-        hx-get="{% url 'blackjack:change_table_name' pk %}">edit name</button>
-</div>
-<h2> Dealer's hand</h2>
-<div class="hand">
-    <div class="card" style="--counter: 0"><img
-              src="{% static 'blackjack/svgs/fronts/' %}{{ game.dealer_hand.0.file_name }}" 
-              alt="{{ game.dealer_hand.0.name }}">
-    </div>
 
-    <div class="card card_flip" style="--counter: 1">
-        <img
-            src="{% static 'blackjack/svgs/fronts/' %}{{ game.dealer_hand.1.file_name }}" 
-            alt="{{ game.dealer_hand.1.name }}">
-    </div>
-    {% for card in game.dealer_hand|slice:"2:" %}
-    <div class="card last-card" style="--counter: calc({{forloop.counter0}} + 2)">
-        <img 
-            src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
-            alt="{{ card.name }}">
-    </div>
-    {% endfor %}
-</div>
-
-<h2> {{ user.username }}'s hand</h2>
-<div class="hand">
-    {% for card in game.player_hand %}
-    <div class="card" style="--counter: {{forloop.counter0}}"><img
-              src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
-              alt="{{ card.name }}">
-    </div>
-    {% endfor %}
-</div>
-
+<div class="left-column center-row">
 <p class="{{ game.winner }}">{{ game.winner }}!</p>
-<div class="button-box">
-    <form class="game-action-form" hx-post="{% url 'blackjack:play_again' pk %}" 
+</div>
+
+<div class="center-column">
+    <h2> Dealer's hand</h2>
+    <div class="hand">
+        {% for card in game.dealer_hand %}
+            <img height="333" width="234" alt="{{ card.name }}" 
+                class="card
+                {% if forloop.counter > 1 %} card-draw{% endif %}" 
+                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" />
+        {% endfor %}
+    </div>
+
+    <h2> {{ user.username }}'s hand</h2>
+    <div class="hand">
+        {% for card in game.player_hand %}
+        <div class="card">
+            <img height="333" width="234"
+                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
+                alt="{{ card.name }}"/>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="right-column center-row">
+    <form class="button-form" hx-post="{% url 'blackjack:play_again' pk %}" 
         hx-target="#table" hx-swap="innerHTML" method="post">
         {% csrf_token %}
-        <input class="game-action-button" type="submit" id="play_agian" value="Play again">
+        <input class="button" type="submit" id="play_agian" value="Play again"/>
     </form>
 </div>

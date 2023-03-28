@@ -1,15 +1,20 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block title %}Log in{% endblock title %}
 
 {% block content %}
-{% if form.errors %}
-    <p>{{ form.errors }}</p>
-{% endif %}
+<div class="table-wrapper">
+    {% if form.errors %}
+        <p>{{ form.errors }}</p>
+    {% endif %}
 
-<h2>Log in</h2>
-<form class='game-action-form' method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input class='game-action-button' type="submit" value="Log in">
-</form>
-{% endblock %}
+    <form class="form-container center-column" method="post">
+        <h2>Log in</h2>
+        <div class="form-items">
+            {{ form.as_div }}
+        </div>
+
+        <input class="button small" type="submit" value="Log in"/>
+        {% csrf_token %}
+    </form>
+</div>
+{% endblock content %}

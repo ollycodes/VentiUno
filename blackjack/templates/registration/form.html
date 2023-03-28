@@ -1,0 +1,11 @@
+{% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+<form class="form-container center-column" method="POST" action="{% url 'blackjack:user_form' %}">
+    <div class="form-items">
+    {{ form.as_div }}
+    </div>
+    <input class="button small" type="submit" value="Create Account">
+    {% csrf_token %}
+</form>

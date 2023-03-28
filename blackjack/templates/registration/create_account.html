@@ -1,15 +1,9 @@
-{% extends 'base.html' %}
-{% block title %}Create Account{% endblock title %}
-
-{% block content %}
 {% if form.errors %}
     <p>Your username and password didn't match. Please try again.</p>
 {% endif %}
 
-<form class='game-action-form' method="post">
+<form class="form" method="POST" action="{% url 'blackjack:user_form' %}">
     {% csrf_token %}
     {{ form.as_p }}
-    <input class='game-action-button' type="submit" value="Create Account">
-    </form>
-
-{% endblock %}
+    <input class='button' type="submit" value="Create Account">
+</form>

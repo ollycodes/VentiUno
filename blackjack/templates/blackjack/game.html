@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<div id="table" hx-get="{% url 'blackjack:table' pk %}" hx-trigger="load">
+<div id="table" class="table-wrapper" hx-get="{% url 'blackjack:table' pk %}" hx-trigger="load">
     <p>loading game</p>
 </div>
 {% endblock content %}

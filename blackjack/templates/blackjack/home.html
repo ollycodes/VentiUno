@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="table-wrapper" id="table-wrapper">
+    <div class="center-column" id="center-div">
+        <input 
+            type="button" 
+            class="button small" 
+            value="Quickplay"
+            hx-target="#center-div" hx-swap="outerHTML"
+            hx-get="{% url 'blackjack:guest_form' %}"/>
+
+        <input 
+            type="button" 
+            class="button small" 
+            value="Login" 
+            onclick="location.href='{% url 'blackjack:login' %}'" />
+
+        <input 
+            type="button" 
+            class="button small" 
+            value="Register"
+            hx-target="#center-div" hx-swap="outerHTML"
+            hx-get="{% url 'blackjack:user_form' %}"/>
+    </div>
+</div>
+{% endblock content %}

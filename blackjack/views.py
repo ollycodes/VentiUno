@@ -6,41 +6,46 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 
-from .forms import GuestForm, TableNameForm
+from .forms import GuestForm, RegistrationForm
 from .models import Table, UserProxy, Player, Guest, Dealer
 from .logics import blackjack as tl
 
-# FORM VIEWS
-def landing_page(request):
+
+def home(request):
     if request.user.is_authenticated:
         return redirect('blackjack:profile')
     elif request.method == 'GET':
-        return render(request, 'blackjack/landing_page.html', dict(form=GuestForm))
+        return render(request, 'blackjack/home.html')
+    else:
+        return HttpResponseNotAllowed(['GET'])
+
+# FORM VIEWS
+def guest_form(request):
+    if request.method == 'GET':
+        return render(request, 'guest/form.html', dict(form=GuestForm))
     elif request.method == 'POST':
         try:
             name = request.POST.get('name')
             guest = get_object_or_404(Guest, name=name)
             request.session['guest_info'] = dict(pk=guest.pk, name=guest.name)
-            return redirect('blackjack:guest_profile')
+            return redirect('blackjack:guest')
         except Http404:
             pass
         form = GuestForm(request.POST)
         if form.is_valid():
             guest = form.save()
             request.session['guest_info'] = dict(pk=guest.pk, name=guest.name)
-            return redirect('blackjack:guest_profile')
+            return redirect('blackjack:new_game')
         else:
-            return render(request, 'blackjack/landing_page.html', dict(form=GuestForm))
+            return render(request, 'guest/form.html', dict(form=form))
     else:
         return HttpResponseNotAllowed(['GET', 'POST'])
 
-def create_user(request):
-    if request.user.is_authenticated:
-        return redirect('blackjack:profile')
-    elif request.method == 'GET':
-        return render(request, 'registration/create_account.html', dict(form=UserCreationForm))
+def user_form(request):
+    if request.method == 'GET':
+        return render(request, 'registration/form.html', dict(form=RegistrationForm))
     elif request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save() # returns user object
             proxy = UserProxy.objects.create(user=user)
@@ -48,22 +53,10 @@ def create_user(request):
             login(request, user)
             return redirect('blackjack:profile')
         else:
-            return render(request, 'registration/create_account.html', dict(form=form))
+            return render(request, 'registration/form.html', dict(form=form))
     else:
         return HttpResponseNotAllowed(['GET','POST'])
 
-def change_table_name(request, pk):
-    table = get_object_or_404(Table, pk=pk)
-    if request.method == 'GET':
-        form = TableNameForm(request.POST, instance=table)
-        return render(request, 'blackjack/table/change_name/form.html', dict(form=form, pk=pk))
-    elif request.method == 'POST':
-        form = TableNameForm(request.POST, instance=table)
-        if form.is_valid():
-            table = form.save()
-            return render(request, 'blackjack/table/change_name/success.html', dict(table=table, pk=pk))
-        else:
-            return render(request, 'blackjack/table/change_name/form.html', dict(form=form, pk=pk))
 
 # PROFILE VIEWS
 def guest_profile(request):
@@ -77,10 +70,11 @@ def guest_profile(request):
             content_type=ContentType.objects.get_for_model(guest), 
             object_id=guest.id
         )
-        print('here')
+        # bug: if no game, view fails. made redirect from create_guest, idk if that will fix
         return render(request, 'guest/profile.html', dict(guest=guest, game=player.table))
     except Http404:
         return render(request, 'blackjack/landing_page.html')
+
 
 @login_required
 def user_profile(request):
@@ -97,37 +91,36 @@ def user_profile(request):
     return render(request, 'user/profile.html', dict(user=request.user))
 
 # GAME VIEWS
-def guest_or_player(request):
+def guest_or_user(request):
     if request.user.is_authenticated:
         player = get_object_or_404(UserProxy, user=request.user)
     else:
         name = request.session.get('guest_info')['name']
-        player = get_object_or_404(Guest, username=name)
+        player = get_object_or_404(Guest, name=name)
     return player
 
 def load_game_instance(request, pk):
     table = get_object_or_404(Table, pk=pk)
-    dealer = get_object_or_404(Dealer, table=table)
-    user_guest = guest_or_player(request)
+    user_guest = guest_or_user(request)
     player = get_object_or_404(
-        Player, 
-        content_type=ContentType.objects.get_for_model(user_guest), 
+        Player,
+        content_type=ContentType.objects.get_for_model(user_guest),
         object_id=user_guest.id,
         table=table
     )
+    dealer = table.dealer
     game = tl.GameLogic.load(table, player, dealer)
     db_objects = dict(table=table, player=player, dealer=dealer)
     return game, db_objects
 
 def create_new_game(request):
     table = Table.objects.create(deck={})
-    table.name = f"Table {table.pk}"
     table.save()
 
     dealer = Dealer.objects.create(table=table, hand={})
     dealer.save()
 
-    user_guest = guest_or_player(request)
+    user_guest = guest_or_user(request)
     player = Player.objects.create(
         table=table, 
         content_type=ContentType.objects.get_for_model(user_guest), 
@@ -148,7 +141,7 @@ def game_view(request, pk):
 
 def table_view(request, pk):
     game, _ = load_game_instance(request, pk)
-    if game.player_total >= 21:
+    if game.player_total >= 21 or game.dealer_card_count > 2:
         return render(request, 'blackjack/table/bust.html', dict(game=game, pk=pk))
     return render(request, 'blackjack/table/pending.html', dict(game=game, pk=pk))
 
@@ -172,9 +165,12 @@ def play_again(request, pk):
     return redirect('blackjack:table', pk)
 
 def delete_view(request):
-    name, profile_type = guest_or_player(request)
-    hands = Hand.objects.filter(name=name, profile_type=profile_type).order_by('table__last_played')
-    return render(request, 'blackjack/table/delete.html', dict(user=request.user, hands=hands))
+    user_guest = guest_or_user(request)
+    tables = Player.objects.filter(
+        content_type=ContentType.objects.get_for_model(user_guest), 
+        object_id=user_guest.id,
+    ).order_by('table__last_played')
+    return render(request, 'blackjack/table/delete.html', dict(user=request.user, tables=tables))
 
 def delete(request, pk):
     Table.objects.filter(pk=pk).delete()

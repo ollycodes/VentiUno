@@ -12,21 +12,34 @@
 {% endblock nav %}
 
 {% block content %}
-<h2>Welcome back {{ user.username }}</h2>
-<h3>Active games</h3>
-<div class="table-view-wrapper">
-    {% for game in games %}
-    <div class="table-view-card">
-        <a href='{% url 'blackjack:game' game.pk %}'>
-        <img class="transparent-card" 
-              src="{% static 'blackjack/svgs/backs/abstract.svg' %}"
-              alt="{{ game.name }}">
-        <p class="text-over-image">{{ game.name }}</p>
-        </a>
+<div class="table-wrapper">
+    <div class="button">
+        <form class="form" action="{% url 'blackjack:new_game' %}" method="get">
+            <input class="action" type="submit" value="New Game">
+        </form>
     </div>
-    {% endfor %}
+
+    <div class="profile-wrapper">
+        <h2>Welcome back {{ user.username }}</h2>
+        <h3>Active games</h3>
+        <div class="hand">
+            {% for game in games %}
+            <div 
+                class="card{% if forloop.last %} last-card{% endif %}" 
+                style="--counter: {{forloop.counter0}}">
+                <a class="card-table" href='{% url 'blackjack:game' game.pk %}'>
+                {{ game.name }}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="button">
+    <form class="form" action="{% url 'blackjack:delete_view' %}" method="get">
+        <input class="action" type="submit" value="Delete Games">
+    </form>
+    </div>
 </div>
 
-<p><a href='{% url 'blackjack:new_game' %}'>New Game</a></p>
-<p><a href='{% url 'blackjack:delete_view' %}'>Delete Games</a></p>
 {% endblock content %}

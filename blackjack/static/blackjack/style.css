@@ -1,4 +1,4 @@
-/* Base BlackJack Style */
+/* BASE ELEMENTS */
 *, *:before, *:after {
     box-sizing: border-box;
 }
@@ -23,8 +23,11 @@ nav a {
     padding: 0 1rem;
 }
 
-.justify-right {
-    margin-left: auto;
+main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
 }
 
 h1, h2, h3 {
@@ -36,172 +39,201 @@ a {
     font-weight: bold;
 }
 
-img {
-    width: 8.26vw;
-    height: 11.74vw;
-    max-width: 11rem;
-    max-height: 15.65rem;
+
+/* BASE STYLE */
+.wood-border {
+    background-color: #83481d;
+    background-image: 
+    repeating-radial-gradient(circle at 25% 50%, transparent 0, #620 3px),
+    repeating-radial-gradient(circle at 75% 50%, transparent 0, #620 5px),
+    repeating-linear-gradient(#3B2200, #920, #3B2200);
+    border-radius: 7px 7px 30% 30%;
+    box-shadow: 0 0 10px #0006;
+    padding: 20px;
+    margin: 1rem;
+    width: 960px;
+    height: 640px;
 }
 
-img:hover {
-    box-shadow: 0 0px 10px 2px black;
-    border-radius: 10px;
+.green-background {
+    background-color: #00674c;
+    background-image: linear-gradient(to top, rgba(255,255,255,0.15), rgba(255,255,255,0));
+    box-shadow: inset 2px -2px 100px #0006, inset 2px -2px 7px black;
+    border-radius: 7px 7px 30% 30%;
+    height: 100%;
 }
 
-.brown-border {
-  background-color: #83481d;
-  background-image: 
-  repeating-radial-gradient(circle at 0 0, transparent 0, #620 3px),
-  repeating-radial-gradient(circle at 100% 100%, transparent 0, #620 3px),
-  repeating-linear-gradient(#3B2200, #920, #3B2200);
-  border-radius: 7px;
-  box-shadow: 0 0 10px #0006; /* Polished look with a shadow */
-  padding: 20px; /* Add some padding to the content */
-  margin: 1%; /* Center the wrapper horizontally */
-}
-
-.brown-border .content-wrapper {
-  border-radius: 1px; /* Smaller rounded corners */
-  padding: 1px; /* Smaller padding to fit inside the wrapper */
-}
-
-.content-wrapper {
+.table-wrapper {
     display: grid;
-    align-content: center;
-    justify-content: center;
-    background-color: #00674c; /* Casino green color */
-    background-image: linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0));
-    box-shadow: inset 2px 2px 100px #0006, inset 2px 2px 7px black;
+    grid-template-columns: 1fr 4fr 10fr 4fr 1fr;
+    grid-template-rows: 4fr 1fr 1fr 2fr;
+    border-radius: 7px 7px 30% 30%;
+    height: 100%;
+    width: 100%;
 }
 
-/* Table styles */
-
-.table-view-wrapper {
+.center-column {
+    grid-column: 3;
+    grid-row: 1/5;
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
-.table-view-card {
-    animation: slideInRight;
-    animation-duration: 1s;
+.left-column {
+    grid-column: 2;
+}
+
+.right-column {
+    grid-column: 4;
+}
+
+.center-row {
+    grid-row: 3;
+}
+
+.form-items div label {
+    display: block;
+}
+
+.form-items div input {
+    width: 100%;
+}
+
+.form-items .helptext {
+    display: none;
+}
+
+.button-form {
+    height: 100%;
+    width: 100%;
+}
+
+.button {
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    color: white;
+    background-color: #2ecc71;
+    border: 1px solid white;
     border-radius: 10px;
-    transition: box-shadow 0.5s, transform 0.1s;
-    position: relative;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
+    height: 100%;
+    width: 100%;
 }
 
-.transparent-card {
-    opacity: 0.5;
+.button:hover {
+  background-color: white;
+  color: #2ecc71;
+  border: 2px solid #2ecc71;
+}
+
+.button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.small {
+    height: 10%;
+    width: 50%;
+    margin: 10px 0;
+}
+
+/* PROFILE STYLE */
+.profile-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card-table {
     width: 8.26vw;
     height: 11.74vw;
-    max-width: 11rem;
-    max-height: 15.65rem;
-    margin: 5px;
-}
-
-.text-over-image {
+    background-color: black;
     color: white;
-    font-size: 1.5vw;
-    font-weight: bold;
-    opacity: 0.75;
-    overflow: hidden;
-    text-overflow: clip;
     text-decoration: none;
-    word-break: break-word;
-    top: 50%;
-    left: 50%;
-    width: 8vw;
-    height: 11vw;
-    position: absolute;
-    transform: translate(-50%, -50%);
+    writing-mode: vertical-lr;
+    text-orientation: upright;
+    white-space: nowrap;
+    transition: background-color 0.3s ease-in-out;
+    border: 1px white solid;
+    border-radius: 10px;
+    padding: 5px 5px;
 }
 
-.table-view-card:hover {
-    transform: translate(0px, -5px);
+.card-table:hover {
+    background: repeating-linear-gradient(-45deg, #dd5246 0, #e8d33f 7.14%, #6cbf36 14.28%, #30a9de 21.42%, #6d5dc4 28.56%, #2d8f8f 35.7%, #b34d9b 42.84%, #dd5246 50%);
+    background-size: 400% 400%;
+    animation: rainbow 10s ease infinite;
 }
 
-.main-form {
-    position: relative;
-    left: 50%;
-    top: 50%;
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
-/* Game Style */
+/* TABLE STYLES */
 .hand {
-    display: flex;
-    width: 20vw;
-    border: solid 0.5vw #eee;
-    border-radius: 1vw;
-    height: 12.7vw;
+    grid-template-columns: repeat(16, 10%);
+    grid-template-rows: none;
+    border: solid 5px #eee;
+    border-radius: 10px;
+    padding: 5px;
+    width: 300px;
+    display: grid;
 }
 
 .card {
     border-radius: 10px;
-    transition: transform 1s;
-    transform: translateX(calc(-6vw * var(--counter)));
+    height: calc(333px * 0.7);
+    width: calc(234px * 0.7);
 }
+
 
 .card:hover {
     transform: 
-    translateX(calc(-6vw * var(--counter))) 
     translateX(-0.5rem) 
     translateY(-1rem) 
     rotate(-0.001turn);
     transition: 0.2s ease-out;
+    transition-delay: 0s; 
 }
 
 .card:hover ~ .card {
-    transform: translateX(calc(-6vw * var(--counter))) translateX(3rem);
+    transform: translateX(10%);
     transition: 0.2s ease-out;
 }
 
-.last-card {
-    animation: slideInRight;
-    animation-duration: 1s;
+.card img {
+    height: 100%;
+    width: 100%;
 }
 
-
-.card_flip {
-    animation: flipInY 1s ease-out;
-    transform-origin: translateX(calc(-6vw * var(--counter)));
-}
-
-.button-box {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-}
-
-.game-action-form {
-    display: inline-grid;
-    margin: 0 1rem;
-    padding: 0;
-}
-
-.game-action-button {
-    padding: 10px 1rem 10px 1rem;
+.card img:hover {
+    box-shadow: 0 0px 10px 2px black;
     border-radius: 10px;
-    font-family: inherit;
-    text-align: center;
-    color: inherit;
-    background: inherit;
 }
 
-.smaller-action-button {
-    display: inline-block;
-    padding: 5px 0.5rem 5px 0.5rem;
+.card-draw {
+    animation: slideInRight 1s ease-in-out;
+}
+
+.form div label {
+    font-weight: bold;
+}
+
+.form div input {
     border-radius: 5px;
-    font-family: inherit;
-    text-align: center;
-    color: inherit;
-    background: inherit;
-}
-
-.table-name {
-    display: inline-block;
-}
-
-.name-form {
-    justify-content: space-between;
 }
 
 /* Outcome format */
@@ -209,8 +241,26 @@ img:hover {
     font-weight: bold;
 }
 
+
 .You {
-    color: #50C878;
+  color: #DEDEDE;
+  font-size: 3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  animation: win-animation 0.8s ease-out;
+  text-shadow: 2px 2px #000000;
+  border-radius: 10px;
+}
+
+@keyframes win-animation {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .Dealer {

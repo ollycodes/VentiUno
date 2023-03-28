@@ -5,8 +5,6 @@ import typing as t
 @dataclass
 class GameLogic:
     """ Main blackjack logic class. """
-    name: str
-    state: str
     deck: t.List[cl.Card]
     player_hand: t.List[cl.Card]
     dealer_hand: t.List[cl.Card]
@@ -62,7 +60,6 @@ class GameLogic:
         self.deck = cl.generate_deck(2)
         self.player_hand = cl.draw_cards(self.deck, 2)
         self.dealer_hand = cl.draw_cards(self.deck, 2)
-        self.state = 'first_deal'
     
     def check_deck(self):
         if len(self.deck) <= 52:
@@ -72,16 +69,13 @@ class GameLogic:
         else:
             self.player_hand = cl.draw_cards(self.deck, 2)
             self.dealer_hand = cl.draw_cards(self.deck, 2)
-        self.state = 'new_round'
 
     def hit(self):
         self.player_hand += cl.draw_cards(self.deck, 1)
-        self.state = 'hit'
 
     def stand(self):
         while self.dealer_total < 17 and self.dealer_total < self.player_total:
             self.dealer_hand += cl.draw_cards(self.deck, 1)
-        self.state = 'stand'
 
     def save_attr_to_db(self, db_object, attr_name):
         if attr_name == 'deck' or attr_name == 'player_hand' or attr_name == 'dealer_hand':
@@ -95,12 +89,10 @@ class GameLogic:
     @classmethod
     def load(cls, db_table_obj, db_player_obj, db_dealer_obj):
         """run in views. loads three db model objects into GameLogic class object."""
-        name = db_table_obj.name
-        state = db_player_obj.state
         deck = cl.cards_from_json(db_table_obj.deck)
         player_hand = cl.cards_from_json(db_player_obj.hand)
         dealer_hand = cl.cards_from_json(db_dealer_obj.hand)
-        game = cls(name=name, state=state, deck=deck, player_hand=player_hand, dealer_hand=dealer_hand)
+        game = cls(deck=deck, player_hand=player_hand, dealer_hand=dealer_hand)
         return game
 
     def save_action(self, db_objects):
@@ -111,7 +103,6 @@ class GameLogic:
         self.save_attr_to_db(table, 'deck')
         self.save_attr_to_db(player, 'player_hand')
         self.save_attr_to_db(dealer, 'dealer_hand')
-        self.save_attr_to_db(player, 'state')
 
     def save_name(self, db_objects):
         table = db_objects['table']
