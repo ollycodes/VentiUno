@@ -15,9 +15,8 @@ urlpatterns = [
     path('game/create', views.create_new_game, name='new_game'),
     path('game/delete/', views.delete_view, name='delete_view'),
     path('game/delete/<int:pk>/', views.delete, name='delete_game'),
-    path('game/table/draw/<int:pk>/', views.initial_draw, name='initial_draw'),
 
     path('table/<int:pk>/', views.table_view, name='table'),
+    path('table/<int:pk>/bet', views.bet_view, name='bet'),
     path('table/<int:pk>/action', views.action, name='action'),
-    path('table/<int:pk>/play_again/', views.play_again, name='play_again'),
 ]

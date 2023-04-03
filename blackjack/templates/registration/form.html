@@ -2,7 +2,7 @@
     <p>Your username and password didn't match. Please try again.</p>
 {% endif %}
 
-<form class="form-container center-column" method="POST" action="{% url 'blackjack:user_form' %}">
+<form class="center" method="POST" action="{% url 'blackjack:user_form' %}">
     <div class="form-items">
     {{ form.as_div }}
     </div>

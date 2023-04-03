@@ -1,35 +1,37 @@
 {% load static %}
 
-<div class="left-column center-row">
-<p class="{{ game.winner }}">{{ game.winner }}!</p>
+{% include "blackjack/table/header.html" %}
+
+<div class="left-info">
+    <h3>Bank: {{ game.coins }}</h3>
+    <h3>Bet: {{ game.bet }}</h3>
+    <p class="{{ game.winner }}">{{ game.winner }}!</p>
 </div>
 
-<div class="center-column">
+<div class="center">
     <h2> Dealer's hand</h2>
     <div class="hand">
         {% for card in game.dealer_hand %}
             <img height="333" width="234" alt="{{ card.name }}" 
-                class="card
-                {% if forloop.counter > 1 %} card-draw{% endif %}" 
-                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" />
+                class="card{% if forloop.counter > 1 %} card-draw{% endif %}" 
+                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}"/>
         {% endfor %}
     </div>
 
-    <h2> {{ user.username }}'s hand</h2>
+    <h2> {{ player.name }}'s hand</h2>
     <div class="hand">
         {% for card in game.player_hand %}
         <div class="card">
-            <img height="333" width="234"
-                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
-                alt="{{ card.name }}"/>
+            <img height="333" width="234" alt="{{ card.name }}"
+                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}"/>
         </div>
         {% endfor %}
     </div>
 </div>
 
-<div class="right-column center-row">
-    <form class="button-form" hx-post="{% url 'blackjack:play_again' pk %}" 
-        hx-target="#table" hx-swap="innerHTML" method="post">
+<div class="right-button">
+    <form class="button-form" hx-get="{% url 'blackjack:bet' pk %}" 
+        hx-target="#table" hx-swap="innerHTML">
         {% csrf_token %}
         <input class="button" type="submit" id="play_agian" value="Play again"/>
     </form>

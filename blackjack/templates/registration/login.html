@@ -2,12 +2,11 @@
 {% block title %}Log in{% endblock title %}
 
 {% block content %}
-<div class="table-wrapper">
     {% if form.errors %}
         <p>{{ form.errors }}</p>
     {% endif %}
 
-    <form class="form-container center-column" method="post">
+    <form class="form-container center" method="post">
         <h2>Log in</h2>
         <div class="form-items">
             {{ form.as_div }}
@@ -16,5 +15,4 @@
         <input class="button small" type="submit" value="Log in"/>
         {% csrf_token %}
     </form>
-</div>
 {% endblock content %}

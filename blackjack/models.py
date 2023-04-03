@@ -35,3 +35,5 @@ class Player(models.Model):
     )
     object_id = models.PositiveIntegerField()
     player = GenericForeignKey('content_type', 'object_id')
+    coins = models.PositiveIntegerField(default=2000)
+    bet = models.PositiveIntegerField(default=0)

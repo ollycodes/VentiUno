@@ -1,0 +1,15 @@
+{% load static %}
+
+{% include "blackjack/table/header.html" %}
+
+<div class="center">
+    <form class="bet" method="post" action="{% url 'blackjack:bet' pk %}">
+        <div class="form-items">
+            <div><label>Bank: {{ game.coins }}</label></div>
+            {{ form.as_div }}
+        </div>
+        <input name="action" class="button" type="submit" value="Place Bet"/>
+        {% csrf_token %}
+    </form>
+
+</div>

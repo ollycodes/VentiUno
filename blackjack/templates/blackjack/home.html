@@ -2,8 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="table-wrapper" id="table-wrapper">
-    <div class="center-column" id="center-div">
+    <div class="center" id="center-div">
         <input 
             type="button" 
             class="button small" 
@@ -15,7 +14,7 @@
             type="button" 
             class="button small" 
             value="Login" 
-            onclick="location.href='{% url 'blackjack:login' %}'" />
+            onclick="window.location.href='{% url 'blackjack:login' %}'" />
 
         <input 
             type="button" 
@@ -24,5 +23,4 @@
             hx-target="#center-div" hx-swap="outerHTML"
             hx-get="{% url 'blackjack:user_form' %}"/>
     </div>
-</div>
 {% endblock content %}

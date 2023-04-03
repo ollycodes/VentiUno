@@ -1,31 +1,25 @@
-/* BASE ELEMENTS */
+/* BASE ELEMENT STYLE */
 *, *:before, *:after {
     box-sizing: border-box;
 }
 
 body {
     background: #000;
-    font-family: EB Garamond;
     color: #dedede;
+    font-family: EB Garamond;
     font-size: 16px;
     margin:0;
 } 
 
-nav {
-    padding: 1rem;
-    display: flex;
-    border-bottom: 1px solid pink;
-}
-
-nav a {
+a {
     color: #dedede;
     font-weight: bold;
     padding: 0 1rem;
 }
 
 main {
-    display: flex;
     align-items: center;
+    display: flex;
     justify-content: center;
     min-height: 100vh;
 }
@@ -34,71 +28,76 @@ h1, h2, h3 {
     margin: 0.25rem;
 }
 
-a {
-    color: #dedede;
-    font-weight: bold;
-}
-
-
-/* BASE STYLE */
-.wood-border {
-    background-color: #83481d;
-    background-image: 
-    repeating-radial-gradient(circle at 25% 50%, transparent 0, #620 3px),
+/* TABLE STYLE & GRID ALOCATION */
+#wood-border {
+    background: 
+    repeating-radial-gradient(circle at 25% 50%, transparent 0, #620 3px), 
     repeating-radial-gradient(circle at 75% 50%, transparent 0, #620 5px),
     repeating-linear-gradient(#3B2200, #920, #3B2200);
+    background-color: #83481d;
     border-radius: 7px 7px 30% 30%;
     box-shadow: 0 0 10px #0006;
-    padding: 20px;
     margin: 1rem;
+    padding: 20px;
     width: 960px;
-    height: 640px;
+    height: 740px;
 }
 
-.green-background {
+#table {
+    background: linear-gradient(to top, rgba(255,255,255,0.15), rgba(255,255,255,0));
     background-color: #00674c;
-    background-image: linear-gradient(to top, rgba(255,255,255,0.15), rgba(255,255,255,0));
-    box-shadow: inset 2px -2px 100px #0006, inset 2px -2px 7px black;
     border-radius: 7px 7px 30% 30%;
+    box-shadow: inset 2px -2px 100px #0006, inset 2px -2px 7px black;
     height: 100%;
-}
-
-.table-wrapper {
     display: grid;
     grid-template-columns: 1fr 4fr 10fr 4fr 1fr;
-    grid-template-rows: 4fr 1fr 1fr 2fr;
-    border-radius: 7px 7px 30% 30%;
-    height: 100%;
-    width: 100%;
+    grid-template-rows: 1fr 6fr 1fr 2fr;
+    grid-template-areas: 
+    "h h h h h"
+    ". li c ri ."
+    ". lb c rb ."
+    ". . . . .";
 }
 
-.center-column {
-    grid-column: 3;
-    grid-row: 1/5;
+.header {
+    grid-area: h;
+}
+
+.center {
+    grid-area: c;
     display: flex;
-    align-items: center;
-    justify-content: center;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.left-column {
-    grid-column: 2;
+.left-info {
+    grid-area: li;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.right-column {
-    grid-column: 4;
+.left-button {
+    grid-area: lb;
 }
 
-.center-row {
-    grid-row: 3;
+.right-button {
+    grid-area: rb;
 }
 
+
+/* BUTTON & FORM STYLE */
 .form-items div label {
     display: block;
+    font-weight: bold;
 }
 
 .form-items div input {
     width: 100%;
+    border-radius: 5px;
+    font-size: medium;
 }
 
 .form-items .helptext {
@@ -142,55 +141,15 @@ a {
     margin: 10px 0;
 }
 
-/* PROFILE STYLE */
-.profile-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.card-table {
-    width: 8.26vw;
-    height: 11.74vw;
-    background-color: black;
-    color: white;
-    text-decoration: none;
-    writing-mode: vertical-lr;
-    text-orientation: upright;
-    white-space: nowrap;
-    transition: background-color 0.3s ease-in-out;
-    border: 1px white solid;
-    border-radius: 10px;
-    padding: 5px 5px;
-}
-
-.card-table:hover {
-    background: repeating-linear-gradient(-45deg, #dd5246 0, #e8d33f 7.14%, #6cbf36 14.28%, #30a9de 21.42%, #6d5dc4 28.56%, #2d8f8f 35.7%, #b34d9b 42.84%, #dd5246 50%);
-    background-size: 400% 400%;
-    animation: rainbow 10s ease infinite;
-}
-
-@keyframes rainbow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* TABLE STYLES */
+/* HAND & CARD STYLES */
 .hand {
-    grid-template-columns: repeat(16, 10%);
-    grid-template-rows: none;
     border: solid 5px #eee;
     border-radius: 10px;
     padding: 5px;
     width: 300px;
     display: grid;
+    grid-template-columns: repeat(16, 10%);
+    grid-template-rows: none;
 }
 
 .card {
@@ -199,7 +158,6 @@ a {
     width: calc(234px * 0.7);
 }
 
-
 .card:hover {
     transform: 
     translateX(-0.5rem) 
@@ -207,6 +165,7 @@ a {
     rotate(-0.001turn);
     transition: 0.2s ease-out;
     transition-delay: 0s; 
+    box-shadow: 0 0px 10px 2px black;
 }
 
 .card:hover ~ .card {
@@ -219,50 +178,59 @@ a {
     width: 100%;
 }
 
-.card img:hover {
-    box-shadow: 0 0px 10px 2px black;
-    border-radius: 10px;
-}
-
 .card-draw {
     animation: slideInRight 1s ease-in-out;
 }
 
-.form div label {
-    font-weight: bold;
+/* GAME CARD STYLE */
+.game {
+    height: 100%;
+    width: 100%;
+    color: white;
+    background-color: black;
+    border: 1px white solid;
+    border-radius: 10px;
+    text-decoration: none;
+    writing-mode: vertical-lr;
+    text-orientation: upright;
+    padding: 5px 5px;
 }
 
-.form div input {
-    border-radius: 5px;
+.game:hover {
+    background: repeating-linear-gradient(
+    -45deg, 
+    #dd5246 0, 
+    #e8d33f 7.14%, 
+    #6cbf36 14.28%, 
+    #30a9de 21.42%, 
+    #6d5dc4 28.56%, 
+    #2d8f8f 35.7%, 
+    #b34d9b 42.84%, 
+    #dd5246 50%
+    );
+    background-size: 400% 400%;
+    animation: rainbow 10s ease infinite;
 }
 
-/* Outcome format */
+@keyframes rainbow {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+/* WINNER STYLES */
 .won, .Draw {
+    text-align: center;
     font-weight: bold;
+    font-size: 3rem;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 10px black;
 }
-
 
 .You {
-  color: #DEDEDE;
-  font-size: 3rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  animation: win-animation 0.8s ease-out;
-  text-shadow: 2px 2px #000000;
-  border-radius: 10px;
-}
-
-@keyframes win-animation {
-  from {
-    transform: scale(0);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+    color: #DEDEDE;
 }
 
 .Dealer {
-    color: #E60026;
+    color: #AC312D;
 }

@@ -1,31 +1,33 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Guest Profile{% endblock title %}
 
-{% block nav %}
-<nav>
-    <a href='{% url 'blackjack:new_game' %}'>New Game</a>
-    <a href='#'>Join Game</a>
-    <a class= 'justify-right' href='{% url 'blackjack:user_form' %}'>Create Account</a>
-</nav>
-{% endblock nav %}
-
 {% block content %}
-<h2>Welcome back {{ guest.name }}</h2>
-<h3>Active games:</h3>
-<div class="table-view-wrapper">
-    {% for game in games %}
-    <div class="table-view-card">
-        <a href='{% url 'blackjack:game' game.pk %}'>
-        <img class="transparent-card" 
-              src="{% static 'blackjack/svgs/backs/abstract.svg' %}"
-              alt="{{ game.name }}">
-        <p class="text-over-image">{{ game.name }}</p>
-        </a>
+    <div class="header">
     </div>
-    {% endfor %}
-</div>
 
-<a href='{% url 'blackjack:delete_view' %}'>Delete Games</a>
+    <div class="left-button">
+        <form class="button-form" action="{% url 'blackjack:new_game' %}" method="get">
+            <input class="button" type="submit" value="New Game"/>
+        </form>
+    </div>
+
+    <div class="center" id="center-div">
+        <h2>Welcome back {{ player.name }}</h2>
+        <h3>Active games</h3>
+        <div class="hand">
+            {% for game in games %}
+            <div class="card{% if forloop.last %} card-draw{% endif %}">
+                <a class="game" href="{% url 'blackjack:game' game.table.pk %}">{{ game.table.pk }}</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="right-button">
+        <form class="button-form" action="{% url 'blackjack:delete_view' %}" method="get">
+            <input class="button" type="submit" value="Delete Games"/>
+        </form>
+    </div>
 {% endblock content %}

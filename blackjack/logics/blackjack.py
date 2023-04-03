@@ -8,6 +8,8 @@ class GameLogic:
     deck: t.List[cl.Card]
     player_hand: t.List[cl.Card]
     dealer_hand: t.List[cl.Card]
+    bet: int
+    coins: int
 
     ATTR_MAP = {
         'player_hand':'hand',
@@ -56,11 +58,10 @@ class GameLogic:
             return "You won"
         return "Dealer won"
 
-    def create_and_deal(self):
-        self.deck = cl.generate_deck(2)
-        self.player_hand = cl.draw_cards(self.deck, 2)
-        self.dealer_hand = cl.draw_cards(self.deck, 2)
-    
+    def player_bet(self, amount):
+        self.bet = amount
+        self.coins = self.coins - self.bet
+
     def check_deck(self):
         if len(self.deck) <= 52:
             self.deck = cl.generate_deck(2)
@@ -70,6 +71,15 @@ class GameLogic:
             self.player_hand = cl.draw_cards(self.deck, 2)
             self.dealer_hand = cl.draw_cards(self.deck, 2)
 
+    def conclude_bet(self):
+        if self.winner == "Draw":
+            self.coins = self.coins + self.bet
+            self.bet = 0
+        elif self.winner == "You won":
+            self.bet = self.bet * 2
+        else:
+            self.bet = 0
+
     def hit(self):
         self.player_hand += cl.draw_cards(self.deck, 1)
 
@@ -78,7 +88,7 @@ class GameLogic:
             self.dealer_hand += cl.draw_cards(self.deck, 1)
 
     def save_attr_to_db(self, db_object, attr_name):
-        if attr_name == 'deck' or attr_name == 'player_hand' or attr_name == 'dealer_hand':
+        if attr_name in ['deck', 'player_hand', 'dealer_hand']:
             db_attr_value = cl.cards_to_json(getattr(self, attr_name))
         else:
             db_attr_value = getattr(self, attr_name)
@@ -92,7 +102,13 @@ class GameLogic:
         deck = cl.cards_from_json(db_table_obj.deck)
         player_hand = cl.cards_from_json(db_player_obj.hand)
         dealer_hand = cl.cards_from_json(db_dealer_obj.hand)
-        game = cls(deck=deck, player_hand=player_hand, dealer_hand=dealer_hand)
+        game = cls(
+            deck=deck, 
+            player_hand=player_hand, 
+            dealer_hand=dealer_hand,
+            bet=db_player_obj.bet,
+            coins=db_player_obj.coins,
+        )
         return game
 
     def save_action(self, db_objects):
@@ -102,8 +118,6 @@ class GameLogic:
 
         self.save_attr_to_db(table, 'deck')
         self.save_attr_to_db(player, 'player_hand')
+        self.save_attr_to_db(player, 'bet')
+        self.save_attr_to_db(player, 'coins')
         self.save_attr_to_db(dealer, 'dealer_hand')
-
-    def save_name(self, db_objects):
-        table = db_objects['table']
-        self.save_attr_to_db(table, 'name')
