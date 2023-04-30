@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}High Scores{% endblock title %}
+
+
+{% block content %}
+{% include "blackjack/table/header.html" %}
+    <div class="center">
+        <table>
+            <caption>Your High Scores</caption>
+            <thead>
+                <tr>
+                    <th>Table</th>
+                    <th>Biggest Bet</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+          {% for hs in high_scores %}
+          <tbody>
+              <tr>
+                  <td>{{ hs.table_id }}</td>
+                  <td>{{ hs.biggest_bet }}</td>
+                  <td>{{ hs.score }}</td>
+              </tr>
+          </tbody>
+          {% empty %}
+          <tbody>
+              <tr>
+                  <td></td>
+                  <td>000</td>
+                  <td>000</td>
+              </tr>
+          </tbody>
+          {% endfor %}
+        </table>
+    </div>
+{% endblock content %}

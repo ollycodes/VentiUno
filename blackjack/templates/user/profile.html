@@ -16,19 +16,50 @@
 
     <div class="center">
             <h2>Welcome back {{ user.username }}</h2>
-            <h3>Active games</h3>
+            <h3>Current Game Tables</h3>
             <div class="hand">
                 {% for game in games %}
                 <div class="card{% if forloop.last %} card-draw{% endif %}">
                 <a class="game" href="{% url 'blackjack:game' game.table.pk %}">{{ game.table.pk }}</a>
                 </div>
+                {% empty %}
+                <div class="card card-draw">
+                    <a class="game no_game" href="{% url 'blackjack:new_game' %}">New Game</a>
+                </div>
                 {% endfor %}
         </div>
     </div>
 
+    <div class="right-info">
+        <table>
+            <caption><a href="{% url 'blackjack:high_scores' %}">High Scores</a></caption>
+            <thead>
+                <tr>
+                    <th>Table</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+          {% for hs in high_scores %}
+          <tbody>
+              <tr>
+                  <td>{{ hs.table_id }}</td>
+                  <td>{{ hs.score }}</td>
+              </tr>
+          </tbody>
+          {% empty %}
+          <tbody>
+              <tr>
+                  <td>No Scores...</td>
+                  <td>000</td>
+              </tr>
+          </tbody>
+          {% endfor %}
+        </table>
+    </div>
+
     <div class="right-button">
         <form class="button-form" action="{% url 'blackjack:delete_view' %}" method="get">
-            <input class="button" type="submit" value="Delete Games"/>
+            <input class="button red" type="submit" value="Delete Games"/>
         </form>
     </div>
 {% endblock content %}

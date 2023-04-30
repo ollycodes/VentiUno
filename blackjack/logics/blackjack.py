@@ -10,6 +10,8 @@ class GameLogic:
     dealer_hand: t.List[cl.Card]
     bet: int
     coins: int
+    high_score: int
+    biggest_bet: int
 
     ATTR_MAP = {
         'player_hand':'hand',
@@ -60,7 +62,9 @@ class GameLogic:
 
     def player_bet(self, amount):
         self.bet = amount
-        self.coins = self.coins - self.bet
+        self.coins -= self.bet
+        if self.bet > self.biggest_bet:
+            self.biggest_bet = self.bet
 
     def check_deck(self):
         if len(self.deck) <= 52:
@@ -74,11 +78,13 @@ class GameLogic:
     def conclude_bet(self):
         if self.winner == "Draw":
             self.coins = self.coins + self.bet
-            self.bet = 0
         elif self.winner == "You won":
-            self.bet = self.bet * 2
-        else:
-            self.bet = 0
+            self.coins += self.bet * 2
+        self.bet = 0
+        if self.biggest_bet < self.bet:
+            self.biggest_bet = self.bet
+        if self.high_score < self.coins:
+            self.high_score = self.coins
 
     def hit(self):
         self.player_hand += cl.draw_cards(self.deck, 1)
@@ -86,6 +92,7 @@ class GameLogic:
     def stand(self):
         while self.dealer_total < 17 and self.dealer_total < self.player_total:
             self.dealer_hand += cl.draw_cards(self.deck, 1)
+        self.conclude_bet()
 
     def save_attr_to_db(self, db_object, attr_name):
         if attr_name in ['deck', 'player_hand', 'dealer_hand']:
@@ -108,6 +115,8 @@ class GameLogic:
             dealer_hand=dealer_hand,
             bet=db_player_obj.bet,
             coins=db_player_obj.coins,
+            high_score=db_player_obj.high_score,
+            biggest_bet=db_player_obj.biggest_bet,
         )
         return game
 
@@ -119,5 +128,7 @@ class GameLogic:
         self.save_attr_to_db(table, 'deck')
         self.save_attr_to_db(player, 'player_hand')
         self.save_attr_to_db(player, 'bet')
+        self.save_attr_to_db(player, 'biggest_bet')
         self.save_attr_to_db(player, 'coins')
+        self.save_attr_to_db(player, 'high_score')
         self.save_attr_to_db(dealer, 'dealer_hand')

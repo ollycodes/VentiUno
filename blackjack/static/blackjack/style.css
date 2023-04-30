@@ -1,3 +1,29 @@
+:root {
+  --c1: #008888;
+  --c1-darker: #006666;
+
+  --c5: #bb66bb;
+  --c5-darker: #a050a0;
+
+  --c25: #ee7722;
+  --c25-darker: #d06010;
+
+  --c50: #eecc22;
+  --c50-darker: #d0b010;
+
+  --c100: #007722;
+  --c100-darker: #006010;
+
+  --c500: #9900dd;
+  --c500-darker: #7000b0;
+
+  --c1000: #800000;
+  --c1000-darker: #600000;
+
+  --c0: #99aabb;
+  --c0-darker: #7799aa;
+}
+
 /* BASE ELEMENT STYLE */
 *, *:before, *:after {
     box-sizing: border-box;
@@ -6,7 +32,7 @@
 body {
     background: #000;
     color: #dedede;
-    font-family: EB Garamond;
+    font-family: sans-serif;
     font-size: 16px;
     margin:0;
 } 
@@ -26,6 +52,27 @@ main {
 
 h1, h2, h3 {
     margin: 0.25rem;
+}
+
+table {
+    table-layout: fixed;
+    width: 100%;
+    border: 1px solid white;
+    border-radius: 10px;
+    border-spacing: 0;
+}
+
+th, td {
+    border-bottom: 1px solid white;
+    text-align: center;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: #008c64;
 }
 
 /* TABLE STYLE & GRID ALOCATION */
@@ -59,6 +106,39 @@ h1, h2, h3 {
     ". . . . .";
 }
 
+.bet-area {
+    height: 100%;
+    width: 100%;
+    grid-column: 2 / 4;
+    grid-row: 2 / 4;
+    display: grid;
+    grid-template-columns: none;
+    grid-template-rows: 2fr 1fr 2fr;
+}
+
+.pit {
+    grid-row: 1;
+    border: solid 5px #eee;
+    border-radius: 10px;
+    padding: 5px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 25%);
+    grid-template-rows: 110px 110px;
+
+}
+
+.pit p {
+    opacity: 30%;
+    font-weight: bold;
+    font-size: xx-large;
+}
+
+.b-form {
+    padding: 10px;
+    width: 50%;
+}
+
 .header {
     grid-area: h;
 }
@@ -79,6 +159,15 @@ h1, h2, h3 {
     align-items: center;
 }
 
+.right-info {
+    grid-area: ri;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
 .left-button {
     grid-area: lb;
 }
@@ -86,7 +175,6 @@ h1, h2, h3 {
 .right-button {
     grid-area: rb;
 }
-
 
 /* BUTTON & FORM STYLE */
 .form-items div label {
@@ -116,7 +204,7 @@ h1, h2, h3 {
     text-align: center;
     color: white;
     background-color: #2ecc71;
-    border: 1px solid white;
+    border: 2px solid white;
     border-radius: 10px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     transition: all 0.3s ease;
@@ -124,10 +212,23 @@ h1, h2, h3 {
     width: 100%;
 }
 
+.red {
+    background-color: #e74c3c;
+}
+
+.clear {
+    width: 90%;
+}
+
 .button:hover {
   background-color: white;
   color: #2ecc71;
   border: 2px solid #2ecc71;
+}
+
+.red:hover {
+  color: #e74c3c;
+  border: 2px solid #e74c3c;
 }
 
 .button:active {
@@ -191,9 +292,32 @@ h1, h2, h3 {
     border: 1px white solid;
     border-radius: 10px;
     text-decoration: none;
+    padding: 5px 5px;
+}
+
+.inverse {
+    background: repeating-linear-gradient(
+    -45deg, 
+    #dd5246 0, 
+    #e8d33f 7.14%, 
+    #6cbf36 14.28%, 
+    #30a9de 21.42%, 
+    #6d5dc4 28.56%, 
+    #2d8f8f 35.7%, 
+    #b34d9b 42.84%, 
+    #dd5246 50%
+    );
+    background-size: 400% 400%;
+    animation: rainbow 10s ease infinite;
+}
+
+.number {
     writing-mode: vertical-lr;
     text-orientation: upright;
-    padding: 5px 5px;
+}
+
+.no_game {
+    display: inline-block;
 }
 
 .game:hover {
@@ -212,11 +336,197 @@ h1, h2, h3 {
     animation: rainbow 10s ease infinite;
 }
 
+.inverse:hover {
+    background: black;
+}
+
 @keyframes rainbow {
   0% {background-position: 0% 50%;}
   50% {background-position: 100% 50%;}
   100% {background-position: 0% 50%;}
 }
+
+/* COIN STYLES */
+.purse {
+    grid-row: 3;
+    border: solid 5px #eee;
+    border-radius: 10px;
+    padding: 5px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 25%);
+    grid-template-rows: 110px 110px;
+}
+
+.first_ring {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border: 10px dashed white;
+    box-shadow: 1px 1px 3px black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    transition: transform 1s ease-out;
+}
+
+.second_ring {
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.third_ring {
+    border: 2px dashed white;
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+}
+
+.third_ring p {
+    text-align: center;
+    color: white;
+    font-weight: bolder;
+    font-size: large;
+}
+
+.first_ring:hover {
+    transform: 
+    translateX(-0.5rem) 
+    translateY(-1rem) 
+    rotate(-0.001turn);
+    transition: 0.2s ease-out;
+    transition-delay: 0s; 
+    box-shadow: 0 0px 10px 2px black;
+}
+
+.first_ring:active {
+  transform: translateY(-300px);
+  opacity: 0;
+  box-shadow: 0px 0px 1px black;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.hidden:active {
+  transform: translateY(300px);
+}
+
+.c1 {
+    background-color: var(--c1);
+}
+
+.c1 .second_ring {
+    background-color: var(--c1-darker);
+}
+
+.c1 .second_ring .third_ring {
+    background-color: var(--c1);
+    box-shadow: 0 0 0 3px var(--c1);
+}
+
+.c5 {
+    background-color: var(--c5);
+}
+
+.c5 .second_ring {
+    background-color: var(--c5-darker);
+}
+
+.c5 .second_ring .third_ring {
+    background-color: var(--c5);
+    box-shadow: 0 0 0 3px var(--c5);
+}
+
+.c25 {
+    background-color: var(--c25);
+}
+
+.c25 .second_ring {
+    background-color: var(--c25-darker);
+}
+
+.c25 .second_ring .third_ring {
+    background-color: var(--c25);
+    box-shadow: 0 0 0 3px var(--c25);
+}
+
+
+.c50 {
+    background-color: var(--c50);
+}
+
+.c50 .second_ring {
+    background-color: var(--c50-darker);
+}
+
+.c50 .second_ring .third_ring {
+    background-color: var(--c50);
+    box-shadow: 0 0 0 3px var(--c50);
+}
+
+
+.c100 {
+    background-color: var(--c100);
+}
+
+.c100 .second_ring {
+    background-color: var(--c100-darker);
+}
+
+.c100 .second_ring .third_ring {
+    background-color: var(--c100);
+    box-shadow: 0 0 0 3px var(--c100);
+}
+
+
+.c500 {
+    background-color: var(--c500);
+}
+
+.c500 .second_ring {
+    background-color: var(--c500-darker);
+}
+
+.c500 .second_ring .third_ring {
+    background-color: var(--c500);
+    box-shadow: 0 0 0 3px var(--c500);
+}
+
+
+.c1000 {
+    background-color: var(--c1000);
+}
+
+.c1000 .second_ring {
+    background-color: var(--c1000-darker);
+}
+
+.c1000 .second_ring .third_ring {
+    background-color: var(--c1000);
+    box-shadow: 0 0 0 3px var(--c1000);
+}
+
+.c0 {
+    background-color: var(--c0);
+}
+
+.c0 .second_ring {
+    background-color: var(--c0-darker);
+}
+
+.c0 .second_ring .third_ring {
+    background-color: var(--c0);
+    box-shadow: 0 0 0 3px var(--c0);
+}
+
 
 /* WINNER STYLES */
 .won, .Draw {

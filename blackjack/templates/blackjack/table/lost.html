@@ -6,6 +6,15 @@
     <p class="{{ game.winner }}">{{ game.winner }}!</p>
 </div>
 
+<div class="left-button">
+    <form class="button-form" 
+          action="{% url 'blackjack:lost' pk %}" 
+          method="post">
+        {% csrf_token %}
+        <input name="action" class="button" type="submit" id="Quit" value="Quit"/>
+    </form>
+</div>
+
 <div class="center">
     <h2> Dealer's hand</h2>
     <div class="hand">
@@ -37,9 +46,9 @@
 {% include "blackjack/table/right-info.html" %}
 
 <div class="right-button">
-    <form class="button-form" hx-get="{% url 'blackjack:bet' pk %}" 
-        hx-target="#table" hx-swap="innerHTML">
+    <form class="button-form" hx-post="{% url 'blackjack:lost' pk %}" 
+        hx-target="#table" hx-swap="innerHTML" hx-include="[name='action']" method="post">
         {% csrf_token %}
-        <input class="button" type="submit" id="play_again" value="Play again"/>
-   </form>
+        <input name="action" class="button red" type="submit" id="Continue?" value="Continue?"/>
+    </form>
 </div>

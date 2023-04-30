@@ -1,15 +1,126 @@
 {% load static %}
 
 {% include "blackjack/table/header.html" %}
+{% include "blackjack/table/right-info.html" %}
 
 <div class="center">
+    <div class="b-form">
     <form class="bet" method="post" action="{% url 'blackjack:bet' pk %}">
         <div class="form-items">
-            <div><label>Bank: {{ game.coins }}</label></div>
             {{ form.as_div }}
         </div>
         <input name="action" class="button" type="submit" value="Place Bet"/>
         {% csrf_token %}
     </form>
+    </div>
 
+    <div class="pit">
+        {% for coin in form.coin_list %}
+        <button id="c{{ coin }}_bet" class="c{{ coin }} first_ring hidden" onmousedown="dec({{ coin }})">
+            <div class="second_ring"><div class="third_ring"><p>{{ coin }}</p></div></div>
+        </button>
+        {% endfor %}
+    </div>
+
+    <h2>Bank: {{ game.coins }}</h2>
+    <div class="purse">
+        {% for coin in form.coin_list %}
+        <button id="c{{ coin }}" class="c{{ coin }} first_ring" onmousedown="inc({{ coin }})">
+            <div class="second_ring">
+            <div class="third_ring">
+                    <p>{{ coin }}</p>
+            </div>
+            </div>
+        </button>
+        {% endfor %}
+
+        <button id="betall" type="button" class="c0 first_ring" name="all_in" onmousedown="betall()" value="all_in">
+            <div class="second_ring">
+            <div class="third_ring">
+                    <p>All In</p>
+            </div>
+            </div>
+        </button>
+
+    </div>
 </div>
+
+<div class="left-button">
+    <input type="button" class="button red clear" value="Clear Bet" onclick="clr()"/>
+</div>
+
+<script>
+    window.onload = function() {
+      coinVisibility();
+    };
+</script>
+
+<script>
+    document.getElementById("id_bet").addEventListener("input", function() {
+        coinVisibility();
+    });
+</script>
+<script>
+    function coinVisibility() {
+        var currentBet = parseInt(document.getElementById("id_bet").value);
+        var validBet = parseInt("{{ game.coins }}") - currentBet;
+        var coinList = [1, 5, 25, 50, 100, 500, 1000];
+        for (var i = 0; i < coinList.length; i++) {
+            var coin = coinList[i];
+            var coinId = "c" + coin.toString();
+            var betCoinId = coinId + "_bet";
+            if (validBet >= coin) {
+                document.getElementById(coinId).style.visibility = "visible";
+            } else {
+                document.getElementById(coinId).style.visibility = "hidden";
+            } 
+            if (currentBet < coin) {
+                document.getElementById(betCoinId).style.visibility = "hidden";
+            } else {
+                document.getElementById(betCoinId).style.visibility = "visible";
+            }
+        }
+    }
+</script>
+<script>
+    function clr() {
+        var idBet = document.getElementById("id_bet");
+        idBet.value = "0";
+        coinVisibility();
+        document.getElementById("betall").style.visibility = "visible";
+    }
+</script>
+<script>
+    function dec(coin) {
+        var idBet = document.getElementById("id_bet");
+        var betValue = parseInt(idBet.value);
+        var idCoinBet = "c" + coin.toString() + "_bet";
+        document.getElementById("betall").style.visibility = "visible";
+        if (betValue >= coin) {
+            betValue -= coin;
+            idBet.value = betValue.toString();
+            coinVisibility();
+        } 
+    }
+</script>
+<script>
+    function inc(coin) {
+        var idBet = document.getElementById("id_bet");
+        var betValue = parseInt(idBet.value);
+        var maxValidBet = parseInt("{{ game.coins }}");
+        var idCoinBet = "c" + coin.toString() + "_bet";
+        if ((maxValidBet - betValue) >= coin) {
+            betValue += coin;
+            idBet.value = betValue.toString();
+            coinVisibility();
+            document.getElementById(idCoinBet).style.visibility = "visible";
+        }
+    }
+</script>
+<script>
+    function betall() {
+        document.getElementById("id_bet").value = "{{ game.coins }}";
+        coinVisibility();
+        document.getElementById("betall").style.visibility = "hidden";
+    }
+</script>

@@ -3,8 +3,10 @@
 {% include "blackjack/table/header.html" %}
 
 <div class="left-info">
-    <h3>Bank: {{ game.coins }}</h3>
-    <h3>Bet: {{ game.bet }}</h3>
+    <h3>Bank: </h3>
+    <p>{{ game.coins }}</p>
+    <h3>Bet: </h3>
+    <p>{{ game.bet }}</p>
 </div>
 
 <div class="left-button">
@@ -43,6 +45,8 @@
         {% endfor %}
     </div>
 </div>
+
+{% include "blackjack/table/right-info.html" %}
 
 <div class="right-button">
     <form class="button-form" hx-post="{% url 'blackjack:action' pk %}" 

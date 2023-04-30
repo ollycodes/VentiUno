@@ -4,7 +4,6 @@
 
 <div class="left-info">
     <h3>Bank: {{ game.coins }}</h3>
-    <h3>Bet: {{ game.bet }}</h3>
     <p class="{{ game.winner }}">{{ game.winner }}!</p>
 </div>
 
@@ -28,6 +27,8 @@
         {% endfor %}
     </div>
 </div>
+
+{% include "blackjack/table/right-info.html" %}
 
 <div class="right-button">
     <form class="button-form" hx-get="{% url 'blackjack:bet' pk %}" 

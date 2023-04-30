@@ -9,8 +9,15 @@
     <div class="hand">
     {% for game in games %}
         <div class="card{% if forloop.last %} card-draw{% endif %}">
-        <a class="game" href="{% url 'blackjack:delete_game' game.table.pk %}">{{ game.table.pk }}</a>
+        <a class="game number inverse" href="{% url 'blackjack:delete_game' game.table.pk %}">{{ game.table.pk }}</a>
         </div>
+    {% empty %}
+    <div class="card card-draw">
+        <a class="game no_game" href="{% url 'blackjack:guest' %}">
+            head empty.
+        </a>
+    </div>
+
     {% endfor %}
     </div>
 </div>

@@ -2,6 +2,6 @@
 
 {% block content %}
 <div hx-target="this" hx-swap="outerHTML" hx-get="{% url 'blackjack:table' pk %}" hx-trigger="load">
-    <p>loading game</p>
+    {% include "blackjack/table/header.html" %}
 </div>
 {% endblock content %}

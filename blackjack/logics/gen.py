@@ -1,5 +1,4 @@
 import sqlite3, random, os
-
 def connect_to_name_gen_db():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     db_path = os.path.join(BASE_DIR, "name_gen.db")
@@ -26,14 +25,3 @@ def generate_name(cur):
 def generate_username():
     cur = connect_to_name_gen_db()
     return generate_name(cur)
-
-    # cur.execute("SELECT Name FROM generated_names")
-    # name_rows = cur.fetchall()
-    # cur.execute("SELECT EXISTS(SELECT name FROM generated_names WHERE name=?)", (username,))
-    # if cur.fetchone():
-    #     print("found")
-    #     print(f"Name Rows: {name_rows}")
-    #     print(f"username: {username}")
-    # else:
-    #     print(f"Name Rows: {name_rows}")
-    #     print(f"username: {username}")
