@@ -3,9 +3,9 @@
 VentiUno is a Django-based Blackjack webapp.
 
 ## ♠️ Preview
-![Profile Preview Image](https://github.com/ollycodes/VentiUno/Blackjack/static/img/new_game.png)
-![Betting Preview Image](https://github.com/ollycodes/VentiUno/Blackjack/static/img/bet.png)
-![Game Preview Image](https://github.com/ollycodes/VentiUno/Blackjack/static/img/hand.png)
+![Profile Preview Image](https://github.com/ollycodes/VentiUno/raw/main/blackjack/static/img/new_game.png)
+![Betting Preview Image](https://github.com/ollycodes/VentiUno/raw/main/blackjack/static/img/bet.png)
+![Game Preview Image](https://github.com/ollycodes/VentiUno/raw/main/blackjack/static/img/hand.png)
 
 ## ♦️ Instalation & Use
 1. Clone repository.
