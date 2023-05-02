@@ -24,7 +24,7 @@ source .venv/bin/activate
 ```shell
 pip install -r requirements.txt
 new_secret_key=$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')  
-echo "SECRET_KEY = \"$new_secret_key\"" >> .env
+echo "SECRET_KEY=\"$new_secret_key\"\nDEBUG=\"True\"" >> .env
 ```
 
 4. Run
