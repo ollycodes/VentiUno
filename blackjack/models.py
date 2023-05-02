@@ -3,10 +3,9 @@ from django.shortcuts import reverse
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
-from .logics.gen import generate_username
 
 class Guest(models.Model):
-    name = models.CharField(max_length=24, unique=True, default=generate_username())
+    name = models.CharField(max_length=24, unique=True)
 
 class UserProxy(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

@@ -1,11 +1,18 @@
 from django import forms
+from django.forms import widgets
 from .models import Guest, Player
 from django.contrib.auth.forms import UserCreationForm
+from .logics.gen import generate_username
 
 class GuestForm(forms.ModelForm):
     class Meta:
         model = Guest
         fields = ["name"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        placeholder = generate_username()
+        self.fields["name"].widget.attrs.update({'placeholder': placeholder})
 
 class RegistrationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
