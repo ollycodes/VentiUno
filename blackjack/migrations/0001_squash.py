@@ -7,7 +7,6 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    replaces = [('blackjack', '0001_squashed_0016_alter_guest_name_alter_highscores_biggest_bet_and_more'), ('blackjack', '0017_alter_guest_name_alter_highscores_content_type_and_more'), ('blackjack', '0018_alter_guest_name'), ('blackjack', '0019_alter_guest_name'), ('blackjack', '0020_alter_guest_name'), ('blackjack', '0021_alter_guest_name')]
 
     initial = True
 
