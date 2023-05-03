@@ -25,10 +25,12 @@ source .venv/bin/activate
 pip install -r requirements.txt
 new_secret_key=$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')  
 echo "export SECRET_KEY=\"$new_secret_key\"\nexport DEBUG=\"True\"" >> .env
+source .env
 ```
 
 4. Run
 ```shell
+python manage.py migrate
 python manage.py runserver
 ```
 - Open in Browser: http://127.0.0.1:8000/
