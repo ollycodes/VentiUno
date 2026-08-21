@@ -10,8 +10,8 @@
 </div>
 
 <div class="left-button">
-    <form class="button-form" hx-post="{% url 'blackjack:action' %}" 
-        hx-target="#table" hx-swap="innerHTML" hx-include="[name='action']" method="post">
+    <form class="button-form" hx-post="{% url 'blackjack:action' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
         {% csrf_token %}
         <input name="action" class="button" type="submit" id="hit" value="hit"/>
     </form>
@@ -49,8 +49,8 @@
 {% include "blackjack/table/right-info.html" %}
 
 <div class="right-button">
-    <form class="button-form" hx-post="{% url 'blackjack:action' %}" 
-        hx-target="#table" hx-swap="innerHTML" hx-include="[include='action']" method="post">
+    <form class="button-form" hx-post="{% url 'blackjack:action' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
         {% csrf_token %}
         <input name="action" class="button" type="submit" id="stand" value="stand"/>
     </form>

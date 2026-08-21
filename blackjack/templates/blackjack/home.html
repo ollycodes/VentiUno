@@ -8,6 +8,8 @@
         {% if has_game %}
         <a class="button small" href="{% url 'blackjack:table' %}">Resume</a>
         <a class="button small" href="{% url 'blackjack:new_game' %}">New Game</a>
+        {% elif has_divvy %}
+        <a class="button small" href="{% url 'blackjack:divvy' %}">Finish setting up your bank</a>
         {% else %}
         <a class="button small" href="{% url 'blackjack:new_game' %}">Play</a>
         {% endif %}

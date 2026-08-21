@@ -1,0 +1,61 @@
+{% include "blackjack/table/header.html" %}
+
+<div class="left-info">
+    <h3>Remaining:</h3>
+    <p>{{ remaining }}</p>
+</div>
+
+<div class="left-button">
+    <form class="button-form" hx-post="{% url 'blackjack:divvy' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
+        {% csrf_token %}
+        <input name="action" class="button red clear" type="submit" value="Reset"/>
+    </form>
+</div>
+
+<div class="center">
+    <h2>Divvy your {{ starting_bank }} bank into coins</h2>
+    {% if error %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endif %}
+
+    <h3>Your bank</h3>
+    <div class="pit">
+        {% for denom, count in divvy.items %}
+        {% if count > 0 %}
+        <form hx-post="{% url 'blackjack:divvy' %}" hx-target="#table" hx-swap="innerHTML"
+            hx-disabled-elt="find button" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="remove"/>
+            <input type="hidden" name="denom" value="{{ denom }}"/>
+            <button type="submit" class="c{{ denom }} first_ring" title="Remove one {{ denom }} coin">
+                <div class="second_ring"><div class="third_ring">
+                    <p>{{ denom }}</p><p class="coin-count">×{{ count }}</p>
+                </div></div>
+            </button>
+        </form>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <h3>Add a coin</h3>
+    <div class="purse">
+        {% for denom in coin_ladder %}
+        <form hx-post="{% url 'blackjack:divvy' %}" hx-target="#table" hx-swap="innerHTML"
+            hx-disabled-elt="find button" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add"/>
+            <input type="hidden" name="denom" value="{{ denom }}"/>
+            <button type="submit" class="c{{ denom }} first_ring"{% if denom > remaining %} disabled{% endif %}>
+                <div class="second_ring"><div class="third_ring"><p>{{ denom }}</p></div></div>
+            </button>
+        </form>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="right-button">
+    <form class="button-form" hx-post="{% url 'blackjack:divvy' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
+        {% csrf_token %}
+        <input name="action" class="button" type="submit" value="Start Playing"/>
+    </form>
+</div>

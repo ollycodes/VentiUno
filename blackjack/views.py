@@ -1,7 +1,7 @@
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import render, redirect
 
-from .forms import BetForm, LeaderboardEntryForm
+from .forms import LeaderboardEntryForm
 from .models import LeaderboardEntry
 from .logics import blackjack as tl
 from .logics import card as cl
@@ -43,7 +43,8 @@ def leaderboard_qualifies(score):
 def home(request):
     if request.method != 'GET':
         return HttpResponseNotAllowed(['GET'])
-    return render(request, 'blackjack/home.html', dict(has_game='game' in request.session))
+    context = dict(has_game='game' in request.session, has_divvy='divvy' in request.session)
+    return render(request, 'blackjack/home.html', context)
 
 
 def options_view(request):
@@ -88,9 +89,55 @@ def leaderboard_submit(request):
 
 
 def new_game(request):
-    request.session['game'] = tl.GameLogic.new().to_session_dict()
+    request.session.pop('game', None)
     request.session.pop('leaderboard_submitted', None)
-    return redirect('blackjack:table')
+    request.session['divvy'] = {str(denom): 0 for denom in cl.COIN_LADDER}
+    return redirect('blackjack:divvy')
+
+
+def divvy_view(request):
+    """
+    Bank setup: before the first bet, the player picks how their starting
+    bank is divided into physical coins. Nothing here touches game.wallet
+    directly — it builds up request.session['divvy'] until it adds up to
+    exactly STARTING_BANK, only then does a GameLogic (and session['game'])
+    get created.
+    """
+    stored = request.session.get('divvy')
+    if stored is None:
+        return redirect('blackjack:home')
+    divvy = {denom: stored.get(str(denom), 0) for denom in cl.COIN_LADDER}
+    error = None
+
+    if request.method == 'POST':
+        action_name = request.POST.get('action')
+        denom = request.POST.get('denom')
+        denom = int(denom) if denom and denom.isdigit() and int(denom) in cl.COIN_LADDER else None
+        total = sum(d * c for d, c in divvy.items())
+
+        if action_name == 'add' and denom is not None and total + denom <= cl.STARTING_BANK:
+            divvy[denom] += 1
+        elif action_name == 'remove' and denom is not None and divvy[denom] > 0:
+            divvy[denom] -= 1
+        elif action_name == 'reset':
+            divvy = {denom: 0 for denom in cl.COIN_LADDER}
+        elif action_name == 'confirm':
+            if total == cl.STARTING_BANK:
+                game = tl.GameLogic.new()
+                game.wallet = divvy
+                game.save(request.session)
+                request.session.pop('divvy', None)
+                return redirect('blackjack:bet')
+            error = f"Your bank has to add up to exactly {cl.STARTING_BANK}."
+
+        request.session['divvy'] = {str(denom): count for denom, count in divvy.items()}
+
+    total = sum(d * c for d, c in divvy.items())
+    context = dict(
+        divvy=divvy, total=total, remaining=cl.STARTING_BANK - total,
+        coin_ladder=cl.COIN_LADDER, starting_bank=cl.STARTING_BANK, error=error,
+    )
+    return render_table(request, 'blackjack/table/divvy.html', context)
 
 
 def table_view(request):
@@ -118,19 +165,35 @@ def bet_view(request):
     if game is None:
         return redirect('blackjack:home')
 
-    if request.method == 'GET':
-        form = BetForm(max_bet=max(game.coins, 1))
-        return render_table(request, 'blackjack/table/bet.html', game_context(request, game, form=form))
-    elif request.method == 'POST':
-        form = BetForm(request.POST, max_bet=max(game.coins, 1))
-        if form.is_valid():
-            game.player_bet(form.cleaned_data['bet'])
-            game.check_deck()
-            game.save(request.session)
-            return redirect('blackjack:table')
-        return render_table(request, 'blackjack/table/bet.html', game_context(request, game, form=form))
-    else:
-        return HttpResponseNotAllowed(['GET', 'POST'])
+    error = None
+    if request.method == 'POST':
+        action_name = request.POST.get('action')
+        denom = request.POST.get('denom')
+        denom = int(denom) if denom and denom.isdigit() and int(denom) in cl.COIN_LADDER else None
+
+        if action_name == 'bet_coin' and denom is not None:
+            game.bet_coin(denom)
+        elif action_name == 'unbet_coin' and denom is not None:
+            game.unbet_coin(denom)
+        elif action_name == 'all_in':
+            game.bet_all()
+        elif action_name == 'clear':
+            game.clear_bet()
+        elif action_name == 'break' and denom is not None:
+            game.break_coin(denom)
+        elif action_name == 'merge' and denom is not None:
+            game.merge_coins(denom)
+        elif action_name == 'place_bet':
+            if game.bet > 0:
+                game.check_deck()
+                game.save(request.session)
+                return redirect('blackjack:table')
+            error = "Put at least one coin in before placing your bet."
+
+        game.save(request.session)
+
+    context = game_context(request, game, exchange=tl.ladder_options(game.wallet), error=error)
+    return render_table(request, 'blackjack/table/bet.html', context)
 
 
 def action(request):
@@ -171,7 +234,7 @@ def lost(request):
     move = request.POST.get('action')
     if move == 'Continue?':
         game.conclude_bet()
-        game.coins += 1000
+        game.wallet[1000] = game.wallet.get(1000, 0) + 1
         game.save(request.session)
         request.session.pop('leaderboard_submitted', None)
         return redirect('blackjack:table')
