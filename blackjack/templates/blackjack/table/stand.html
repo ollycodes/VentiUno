@@ -31,9 +31,9 @@
 {% include "blackjack/table/right-info.html" %}
 
 <div class="right-button">
-    <form class="button-form" hx-get="{% url 'blackjack:bet' %}" 
-        hx-target="#table" hx-swap="innerHTML">
+    <form class="button-form" hx-get="{% url 'blackjack:bet' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']">
         {% csrf_token %}
-        <input class="button" type="submit" id="play_agian" value="Play again"/>
+        <input class="button" type="submit" id="play_again" value="Play again"/>
     </form>
 </div>

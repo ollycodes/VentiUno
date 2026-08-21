@@ -2,7 +2,8 @@
 <div class="deck-style-grid" id="deck-style-grid">
     {% for style, label in styles %}
     <form class="deck-style-option{% if style == current %} selected{% endif %}"
-          hx-post="{% url 'blackjack:options' %}" hx-target="#deck-style-grid" hx-swap="outerHTML">
+          hx-post="{% url 'blackjack:options' %}" hx-target="#deck-style-grid" hx-swap="outerHTML"
+          hx-disabled-elt="find button">
         {% csrf_token %}
         <input type="hidden" name="deck_style" value="{{ style }}"/>
         <button type="submit" class="deck-style-swatch">

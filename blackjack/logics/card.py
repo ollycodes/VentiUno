@@ -7,6 +7,12 @@ DECK_STYLES = [
 ]
 DEFAULT_DECK_STYLE = 'red'
 
+# Denominations form a ladder: each one divides evenly into the one below it
+# (5, 5, 2, 2, 5, 2), which is what makes breaking/merging a coin a single
+# unambiguous operation with no remainder to handle.
+COIN_LADDER = [1, 5, 25, 50, 100, 500, 1000]
+STARTING_BANK = 2000
+
 SUITS = {'hearts', 'diamonds', 'spades', 'clubs'}
 RANKS = {
     'ace': 1,

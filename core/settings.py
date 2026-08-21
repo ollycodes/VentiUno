@@ -85,7 +85,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 DATABASES = {
     "default": {
@@ -95,13 +95,18 @@ DATABASES = {
 }
 
 # Game state and preferences live entirely in the session — no accounts,
-# no per-request DB session writes. LocMemCache is per-process: fine for a
-# single dev/gunicorn worker, but swap this for a shared backend (Redis/
-# Memcached) if this is ever deployed with multiple worker processes.
+# no per-request DB session writes. A file-based cache (rather than
+# LocMemCache) survives process restarts, which matters a lot in
+# development: runserver's autoreloader restarts the whole process on
+# every file save, and an in-memory cache would silently drop every active
+# session each time. Swap this for a shared backend (Redis/Memcached) if
+# this is ever deployed with multiple worker processes, since a file cache
+# on local disk isn't shared between them either.
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": BASE_DIR / ".django_cache",
     }
 }
 

@@ -34,8 +34,8 @@ body {
     color: #dedede;
     font-family: sans-serif;
     font-size: 16px;
-    margin:0;
-} 
+    margin: 0;
+}
 
 a {
     color: #dedede;
@@ -75,10 +75,10 @@ tbody tr:hover {
     background-color: #008c64;
 }
 
-/* TABLE STYLE & GRID ALOCATION */
+/* TABLE STYLE & GRID ALLOCATION */
 #wood-border {
-    background: 
-    repeating-radial-gradient(circle at 25% 50%, transparent 0, #620 3px), 
+    background:
+    repeating-radial-gradient(circle at 25% 50%, transparent 0, #620 3px),
     repeating-radial-gradient(circle at 75% 50%, transparent 0, #620 5px),
     repeating-linear-gradient(#3B2200, #920, #3B2200);
     background-color: #83481d;
@@ -99,21 +99,11 @@ tbody tr:hover {
     display: grid;
     grid-template-columns: 1fr 4fr 10fr 4fr 1fr;
     grid-template-rows: 1fr 6fr 1fr 2fr;
-    grid-template-areas: 
+    grid-template-areas:
     "h h h h h"
     ". li c ri ."
     ". lb c rb ."
     ". . . . .";
-}
-
-.bet-area {
-    height: 100%;
-    width: 100%;
-    grid-column: 2 / 4;
-    grid-row: 2 / 4;
-    display: grid;
-    grid-template-columns: none;
-    grid-template-rows: 2fr 1fr 2fr;
 }
 
 .pit {
@@ -125,7 +115,6 @@ tbody tr:hover {
     display: grid;
     grid-template-columns: repeat(4, 25%);
     grid-template-rows: 110px 110px;
-
 }
 
 .pit p {
@@ -143,30 +132,24 @@ tbody tr:hover {
     grid-area: h;
 }
 
-.center {
-    grid-area: c;
+.center, .left-info, .right-info {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.center {
+    grid-area: c;
 }
 
 .left-info {
     grid-area: li;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }
 
 .right-info {
     grid-area: ri;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }
-
 
 .left-button {
     grid-area: lb;
@@ -190,6 +173,15 @@ tbody tr:hover {
 
 .form-items .helptext {
     display: none;
+}
+
+.errorlist {
+    list-style: none;
+    margin: 0 0 5px 0;
+    padding: 0;
+    color: #e74c3c;
+    font-weight: bold;
+    font-size: 0.85rem;
 }
 
 .button-form {
@@ -223,19 +215,24 @@ tbody tr:hover {
 }
 
 .button:hover {
-  background-color: white;
-  color: #2ecc71;
-  border: 2px solid #2ecc71;
+    background-color: white;
+    color: #2ecc71;
+    border: 2px solid #2ecc71;
 }
 
 .red:hover {
-  color: #e74c3c;
-  border: 2px solid #e74c3c;
+    color: #e74c3c;
+    border: 2px solid #e74c3c;
 }
 
 .button:active {
-  transform: translateY(2px);
-  box-shadow: none;
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+.button:disabled, .deck-style-swatch:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .small {
@@ -261,13 +258,13 @@ tbody tr:hover {
     width: calc(234px * 0.7);
 }
 
-.card:hover {
-    transform: 
-    translateX(-0.5rem) 
-    translateY(-1rem) 
+.card:hover, .first_ring:hover {
+    transform:
+    translateX(-0.5rem)
+    translateY(-1rem)
     rotate(-0.001turn);
     transition: 0.2s ease-out;
-    transition-delay: 0s; 
+    transition-delay: 0s;
     box-shadow: 0 0px 10px 2px black;
 }
 
@@ -285,69 +282,6 @@ tbody tr:hover {
     animation: slideInRight 1s ease-in-out;
 }
 
-/* GAME CARD STYLE */
-.game {
-    height: 100%;
-    width: 100%;
-    color: white;
-    background-color: black;
-    border: 1px white solid;
-    border-radius: 10px;
-    text-decoration: none;
-    padding: 5px 5px;
-}
-
-.inverse {
-    background: repeating-linear-gradient(
-    -45deg, 
-    #dd5246 0, 
-    #e8d33f 7.14%, 
-    #6cbf36 14.28%, 
-    #30a9de 21.42%, 
-    #6d5dc4 28.56%, 
-    #2d8f8f 35.7%, 
-    #b34d9b 42.84%, 
-    #dd5246 50%
-    );
-    background-size: 400% 400%;
-    animation: rainbow 10s ease infinite;
-}
-
-.number {
-    writing-mode: vertical-lr;
-    text-orientation: upright;
-}
-
-.no_game {
-    display: inline-block;
-}
-
-.game:hover {
-    background: repeating-linear-gradient(
-    -45deg, 
-    #dd5246 0, 
-    #e8d33f 7.14%, 
-    #6cbf36 14.28%, 
-    #30a9de 21.42%, 
-    #6d5dc4 28.56%, 
-    #2d8f8f 35.7%, 
-    #b34d9b 42.84%, 
-    #dd5246 50%
-    );
-    background-size: 400% 400%;
-    animation: rainbow 10s ease infinite;
-}
-
-.inverse:hover {
-    background: black;
-}
-
-@keyframes rainbow {
-  0% {background-position: 0% 50%;}
-  50% {background-position: 100% 50%;}
-  100% {background-position: 0% 50%;}
-}
-
 /* COIN STYLES */
 .purse {
     grid-row: 3;
@@ -360,12 +294,19 @@ tbody tr:hover {
     grid-template-rows: 110px 110px;
 }
 
+/*
+ * Coin color: each .c<value> class below only sets --coin/--coin-darker;
+ * these three rules read them once and apply to every denomination. Custom
+ * properties inherit, so .second_ring/.third_ring pick up whatever their
+ * .c<value> ancestor set without needing a separate rule per denomination.
+ */
 .first_ring {
     height: 100px;
     width: 100px;
     border-radius: 50%;
     border: 10px dashed white;
     box-shadow: 1px 1px 3px black;
+    background-color: var(--coin);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -377,6 +318,7 @@ tbody tr:hover {
     height: 100%;
     width: 100%;
     border-radius: 50%;
+    background-color: var(--coin-darker);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -388,6 +330,8 @@ tbody tr:hover {
     height: 100%;
     width: 100%;
     border-radius: 50%;
+    background-color: var(--coin);
+    box-shadow: 0 0 0 3px var(--coin);
 }
 
 .third_ring p {
@@ -395,22 +339,19 @@ tbody tr:hover {
     color: white;
     font-weight: bolder;
     font-size: large;
+    margin: 0;
 }
 
-.first_ring:hover {
-    transform: 
-    translateX(-0.5rem) 
-    translateY(-1rem) 
-    rotate(-0.001turn);
-    transition: 0.2s ease-out;
-    transition-delay: 0s; 
-    box-shadow: 0 0px 10px 2px black;
+.third_ring .coin-count {
+    font-size: small;
+    font-weight: normal;
+    opacity: 0.8;
 }
 
 .first_ring:active {
-  transform: translateY(-300px);
-  opacity: 0;
-  box-shadow: 0px 0px 1px black;
+    transform: translateY(-300px);
+    opacity: 0;
+    box-shadow: 0px 0px 1px black;
 }
 
 .hidden {
@@ -418,117 +359,44 @@ tbody tr:hover {
 }
 
 .hidden:active {
-  transform: translateY(300px);
+    transform: translateY(300px);
 }
 
-.c1 {
-    background-color: var(--c1);
+.exchange {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 10px;
 }
 
-.c1 .second_ring {
-    background-color: var(--c1-darker);
+.exchange-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.c1 .second_ring .third_ring {
-    background-color: var(--c1);
-    box-shadow: 0 0 0 3px var(--c1);
+.exchange-label {
+    font-weight: bold;
+    min-width: 70px;
 }
 
-.c5 {
-    background-color: var(--c5);
+.exchange-button {
+    height: auto;
+    width: auto;
+    font-size: 0.85rem;
+    padding: 5px 10px;
 }
 
-.c5 .second_ring {
-    background-color: var(--c5-darker);
-}
-
-.c5 .second_ring .third_ring {
-    background-color: var(--c5);
-    box-shadow: 0 0 0 3px var(--c5);
-}
-
-.c25 {
-    background-color: var(--c25);
-}
-
-.c25 .second_ring {
-    background-color: var(--c25-darker);
-}
-
-.c25 .second_ring .third_ring {
-    background-color: var(--c25);
-    box-shadow: 0 0 0 3px var(--c25);
-}
-
-
-.c50 {
-    background-color: var(--c50);
-}
-
-.c50 .second_ring {
-    background-color: var(--c50-darker);
-}
-
-.c50 .second_ring .third_ring {
-    background-color: var(--c50);
-    box-shadow: 0 0 0 3px var(--c50);
-}
-
-
-.c100 {
-    background-color: var(--c100);
-}
-
-.c100 .second_ring {
-    background-color: var(--c100-darker);
-}
-
-.c100 .second_ring .third_ring {
-    background-color: var(--c100);
-    box-shadow: 0 0 0 3px var(--c100);
-}
-
-
-.c500 {
-    background-color: var(--c500);
-}
-
-.c500 .second_ring {
-    background-color: var(--c500-darker);
-}
-
-.c500 .second_ring .third_ring {
-    background-color: var(--c500);
-    box-shadow: 0 0 0 3px var(--c500);
-}
-
-
-.c1000 {
-    background-color: var(--c1000);
-}
-
-.c1000 .second_ring {
-    background-color: var(--c1000-darker);
-}
-
-.c1000 .second_ring .third_ring {
-    background-color: var(--c1000);
-    box-shadow: 0 0 0 3px var(--c1000);
-}
-
-.c0 {
-    background-color: var(--c0);
-}
-
-.c0 .second_ring {
-    background-color: var(--c0-darker);
-}
-
-.c0 .second_ring .third_ring {
-    background-color: var(--c0);
-    box-shadow: 0 0 0 3px var(--c0);
-}
-
+.c1 { --coin: var(--c1); --coin-darker: var(--c1-darker); }
+.c5 { --coin: var(--c5); --coin-darker: var(--c5-darker); }
+.c25 { --coin: var(--c25); --coin-darker: var(--c25-darker); }
+.c50 { --coin: var(--c50); --coin-darker: var(--c50-darker); }
+.c100 { --coin: var(--c100); --coin-darker: var(--c100-darker); }
+.c500 { --coin: var(--c500); --coin-darker: var(--c500-darker); }
+.c1000 { --coin: var(--c1000); --coin-darker: var(--c1000-darker); }
+.c0 { --coin: var(--c0); --coin-darker: var(--c0-darker); }
 
 /* OPTIONS / DECK STYLE PICKER */
 .deck-style-grid {
