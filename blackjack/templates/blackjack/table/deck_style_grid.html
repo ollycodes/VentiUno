@@ -1,0 +1,14 @@
+{% load static %}
+<div class="deck-style-grid" id="deck-style-grid">
+    {% for style, label in styles %}
+    <form class="deck-style-option{% if style == current %} selected{% endif %}"
+          hx-post="{% url 'blackjack:options' %}" hx-target="#deck-style-grid" hx-swap="outerHTML">
+        {% csrf_token %}
+        <input type="hidden" name="deck_style" value="{{ style }}"/>
+        <button type="submit" class="deck-style-swatch">
+            <img src="{% static 'blackjack/svgs/backs/' %}{{ style }}.svg" alt="{{ label }}" width="90" height="128"/>
+            <span>{{ label }}</span>
+        </button>
+    </form>
+    {% endfor %}
+</div>

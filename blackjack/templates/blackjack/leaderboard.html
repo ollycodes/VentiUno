@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard{% endblock title %}
+
+{% block content %}
+{% include "blackjack/table/header.html" %}
+<div class="center">
+    <table>
+        <caption>Leaderboard</caption>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Biggest Bet</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        {% for entry in entries %}
+        <tbody>
+            <tr>
+                <td>{{ entry.name }}</td>
+                <td>{{ entry.biggest_bet }}</td>
+                <td>{{ entry.score }}</td>
+            </tr>
+        </tbody>
+        {% empty %}
+        <tbody>
+            <tr>
+                <td>head empty.</td>
+                <td>000</td>
+                <td>000</td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+</div>
+{% endblock content %}

@@ -7,9 +7,8 @@
 </div>
 
 <div class="left-button">
-    <form class="button-form" 
-          action="{% url 'blackjack:lost' pk %}" 
-          method="post">
+    <form class="button-form" hx-post="{% url 'blackjack:lost' %}"
+        hx-target="#table" hx-swap="innerHTML" method="post">
         {% csrf_token %}
         <input name="action" class="button" type="submit" id="Quit" value="Quit"/>
     </form>
@@ -19,34 +18,40 @@
     <h2> Dealer's hand</h2>
     <div class="hand">
         {% for card in game.dealer_hand %}
-        <div 
+        <div
             class="card{% if forloop.counter > 1 %} card-draw{% endif %}">
-            <img 
+            <img
                 height="333" width="234"
-                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
+                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}"
                 alt="{{ card.name }}"/>
         </div>
         {% endfor %}
     </div>
 
-    <h2>{{ player.name }}'s hand</h2>
+    <h2>Your hand</h2>
     <div class="hand">
         {% for card in game.player_hand %}
-            <div 
+            <div
                 class="card{% if forloop.last %} card-draw{% endif %}" >
-                <img 
+                <img
                     height="333" width="234"
-                    src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
+                    src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}"
                     alt="{{ card.name }}"/>
             </div>
         {% endfor %}
     </div>
+
+    {% if submitted %}
+    <p class="leaderboard-prompt">Thanks — your score is on the leaderboard!</p>
+    {% elif qualifies %}
+    {% include "blackjack/table/leaderboard_form.html" %}
+    {% endif %}
 </div>
 
 {% include "blackjack/table/right-info.html" %}
 
 <div class="right-button">
-    <form class="button-form" hx-post="{% url 'blackjack:lost' pk %}" 
+    <form class="button-form" hx-post="{% url 'blackjack:lost' %}"
         hx-target="#table" hx-swap="innerHTML" hx-include="[name='action']" method="post">
         {% csrf_token %}
         <input name="action" class="button red" type="submit" id="Continue?" value="Continue?"/>

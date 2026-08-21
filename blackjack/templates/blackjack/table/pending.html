@@ -10,7 +10,7 @@
 </div>
 
 <div class="left-button">
-    <form class="button-form" hx-post="{% url 'blackjack:action' pk %}" 
+    <form class="button-form" hx-post="{% url 'blackjack:action' %}" 
         hx-target="#table" hx-swap="innerHTML" hx-include="[name='action']" method="post">
         {% csrf_token %}
         <input name="action" class="button" type="submit" id="hit" value="hit"/>
@@ -24,17 +24,17 @@
         <div class="card">
             <img height="333" width="234"
                 {% if forloop.first %}
-                    src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
+                    src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}"
                     alt="{{ card.name }}"
                 {% else %}
-                    src="{% static 'blackjack/svgs/backs/red.svg' %}" 
+                    src="{% static 'blackjack/svgs/backs/' %}{{ deck_style }}.svg"
                     alt="card cover"
                 {% endif %}/>
         </div>
         {% endfor %}
     </div>
 
-    <h2>{{ player.name }}'s hand</h2>
+    <h2>Your hand</h2>
     <div class="hand">
         {% for card in game.player_hand %}
         <div class="card{% if forloop.last %} card-draw{% endif %}">
@@ -49,7 +49,7 @@
 {% include "blackjack/table/right-info.html" %}
 
 <div class="right-button">
-    <form class="button-form" hx-post="{% url 'blackjack:action' pk %}" 
+    <form class="button-form" hx-post="{% url 'blackjack:action' %}" 
         hx-target="#table" hx-swap="innerHTML" hx-include="[include='action']" method="post">
         {% csrf_token %}
         <input name="action" class="button" type="submit" id="stand" value="stand"/>

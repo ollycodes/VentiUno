@@ -1,6 +1,12 @@
 from dataclasses import dataclass
 import random
 
+DECK_STYLES = [
+    'red', 'red2', 'blue', 'blue2', 'frog', 'fish',
+    'abstract', 'abstract_clouds', 'abstract_scene', 'astronaut', 'cars', 'castle',
+]
+DEFAULT_DECK_STYLE = 'red'
+
 SUITS = {'hearts', 'diamonds', 'spades', 'clubs'}
 RANKS = {
     'ace': 1,

@@ -1,8 +1,6 @@
+{% load static %}
 <div class="header">
-{% if user.is_authenticated %}
-    <a href="{% url 'blackjack:profile' %}">Profile</a>
-    <a href="{% url 'blackjack:logout' %}">Log out</a>
-{% else %}
-    <a href="{% url 'blackjack:guest' %}">Guest Profile</a>
-{% endif %}
+    <a href="{% url 'blackjack:home' %}">Home</a>
+    <a href="{% url 'blackjack:options' %}">Options</a>
+    <a href="{% url 'blackjack:leaderboard' %}">Leaderboard</a>
 </div>

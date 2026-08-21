@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Options{% endblock title %}
+
+{% block content %}
+{% include "blackjack/table/header.html" %}
+<div class="center">
+    <h2>Choose a deck style</h2>
+    {% include "blackjack/table/deck_style_grid.html" %}
+</div>
+{% endblock content %}

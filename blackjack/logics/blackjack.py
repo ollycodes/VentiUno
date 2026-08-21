@@ -13,11 +13,6 @@ class GameLogic:
     high_score: int
     biggest_bet: int
 
-    ATTR_MAP = {
-        'player_hand':'hand',
-        'dealer_hand':'hand',
-    }
-
     def _total(self, hand):
         hand_total = 0
         has_ace = False
@@ -94,41 +89,45 @@ class GameLogic:
             self.dealer_hand += cl.draw_cards(self.deck, 1)
         self.conclude_bet()
 
-    def save_attr_to_db(self, db_object, attr_name):
-        if attr_name in ['deck', 'player_hand', 'dealer_hand']:
-            db_attr_value = cl.cards_to_json(getattr(self, attr_name))
-        else:
-            db_attr_value = getattr(self, attr_name)
-        db_attr_name = self.ATTR_MAP.get(attr_name, attr_name)
-        setattr(db_object, db_attr_name, db_attr_value)
-        db_object.save()
+    @classmethod
+    def new(cls):
+        """Starts a fresh game with a full bank and no cards dealt."""
+        return cls(
+            deck=[],
+            player_hand=[],
+            dealer_hand=[],
+            bet=0,
+            coins=2000,
+            high_score=0,
+            biggest_bet=0,
+        )
+
+    def to_session_dict(self):
+        return dict(
+            deck=cl.cards_to_json(self.deck),
+            player_hand=cl.cards_to_json(self.player_hand),
+            dealer_hand=cl.cards_to_json(self.dealer_hand),
+            bet=self.bet,
+            coins=self.coins,
+            high_score=self.high_score,
+            biggest_bet=self.biggest_bet,
+        )
 
     @classmethod
-    def load(cls, db_table_obj, db_player_obj, db_dealer_obj):
-        """run in views. loads three db model objects into GameLogic class object."""
-        deck = cl.cards_from_json(db_table_obj.deck)
-        player_hand = cl.cards_from_json(db_player_obj.hand)
-        dealer_hand = cl.cards_from_json(db_dealer_obj.hand)
-        game = cls(
-            deck=deck, 
-            player_hand=player_hand, 
-            dealer_hand=dealer_hand,
-            bet=db_player_obj.bet,
-            coins=db_player_obj.coins,
-            high_score=db_player_obj.high_score,
-            biggest_bet=db_player_obj.biggest_bet,
+    def from_session(cls, session):
+        """Loads the active game out of request.session, or None if there isn't one."""
+        data = session.get('game')
+        if data is None:
+            return None
+        return cls(
+            deck=cl.cards_from_json(data['deck']),
+            player_hand=cl.cards_from_json(data['player_hand']),
+            dealer_hand=cl.cards_from_json(data['dealer_hand']),
+            bet=data['bet'],
+            coins=data['coins'],
+            high_score=data['high_score'],
+            biggest_bet=data['biggest_bet'],
         )
-        return game
 
-    def save_action(self, db_objects):
-        table = db_objects['table']
-        player = db_objects['player']
-        dealer = db_objects['dealer']
-
-        self.save_attr_to_db(table, 'deck')
-        self.save_attr_to_db(player, 'player_hand')
-        self.save_attr_to_db(player, 'bet')
-        self.save_attr_to_db(player, 'biggest_bet')
-        self.save_attr_to_db(player, 'coins')
-        self.save_attr_to_db(player, 'high_score')
-        self.save_attr_to_db(dealer, 'dealer_hand')
+    def save(self, session):
+        session['game'] = self.to_session_dict()

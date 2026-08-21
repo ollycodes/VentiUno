@@ -17,7 +17,7 @@
         {% endfor %}
     </div>
 
-    <h2> {{ player.name }}'s hand</h2>
+    <h2>Your hand</h2>
     <div class="hand">
         {% for card in game.player_hand %}
         <div class="card">
@@ -31,7 +31,7 @@
 {% include "blackjack/table/right-info.html" %}
 
 <div class="right-button">
-    <form class="button-form" hx-get="{% url 'blackjack:bet' pk %}" 
+    <form class="button-form" hx-get="{% url 'blackjack:bet' %}" 
         hx-target="#table" hx-swap="innerHTML">
         {% csrf_token %}
         <input class="button" type="submit" id="play_agian" value="Play again"/>

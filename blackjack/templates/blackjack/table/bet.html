@@ -5,7 +5,7 @@
 
 <div class="center">
     <div class="b-form">
-    <form class="bet" method="post" action="{% url 'blackjack:bet' pk %}">
+    <form class="bet" method="post" hx-post="{% url 'blackjack:bet' %}" hx-target="#table" hx-swap="innerHTML">
         <div class="form-items">
             {{ form.as_div }}
         </div>

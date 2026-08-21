@@ -1,7 +1,0 @@
-<form class="center" method="POST" action="{% url 'blackjack:guest_form' %}">
-    <div class="form-items">
-    {{ form.as_div }}
-    </div>
-    <input name="action" class="button small" type="submit" value="Play Blackjack"/>
-    {% csrf_token %}
-</form>

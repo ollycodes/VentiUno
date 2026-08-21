@@ -198,10 +198,12 @@ tbody tr:hover {
 }
 
 .button {
+    display: inline-block;
     font-family: inherit;
     font-weight: bold;
     font-size: 20px;
     text-align: center;
+    text-decoration: none;
     color: white;
     background-color: #2ecc71;
     border: 2px solid white;
@@ -527,6 +529,52 @@ tbody tr:hover {
     box-shadow: 0 0 0 3px var(--c0);
 }
 
+
+/* OPTIONS / DECK STYLE PICKER */
+.deck-style-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    max-width: 700px;
+    padding: 10px;
+}
+
+.deck-style-option {
+    margin: 0;
+}
+
+.deck-style-swatch {
+    background: none;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    color: #dedede;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    transition: all 0.2s ease;
+}
+
+.deck-style-swatch img {
+    border-radius: 6px;
+}
+
+.deck-style-swatch:hover {
+    border-color: #2ecc71;
+}
+
+.deck-style-option.selected .deck-style-swatch {
+    border-color: #2ecc71;
+    background-color: rgba(46, 204, 113, 0.2);
+}
+
+/* LEADERBOARD PROMPT */
+.leaderboard-prompt {
+    text-align: center;
+    margin-top: 10px;
+}
 
 /* WINNER STYLES */
 .won, .Draw {

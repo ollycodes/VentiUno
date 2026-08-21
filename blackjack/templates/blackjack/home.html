@@ -2,25 +2,14 @@
 {% load static %}
 
 {% block content %}
+    {% include "blackjack/table/header.html" %}
     <div class="center" id="center-div">
-        <input 
-            type="button" 
-            class="button small" 
-            value="Quickplay"
-            hx-target="#center-div" hx-swap="outerHTML"
-            hx-get="{% url 'blackjack:guest_form' %}"/>
-
-        <input 
-            type="button" 
-            class="button small" 
-            value="Login" 
-            onclick="window.location.href='{% url 'blackjack:login' %}'" />
-
-        <input 
-            type="button" 
-            class="button small" 
-            value="Register"
-            hx-target="#center-div" hx-swap="outerHTML"
-            hx-get="{% url 'blackjack:user_form' %}"/>
+        <h2>Blackjack!</h2>
+        {% if has_game %}
+        <a class="button small" href="{% url 'blackjack:table' %}">Resume</a>
+        <a class="button small" href="{% url 'blackjack:new_game' %}">New Game</a>
+        {% else %}
+        <a class="button small" href="{% url 'blackjack:new_game' %}">Play</a>
+        {% endif %}
     </div>
 {% endblock content %}
