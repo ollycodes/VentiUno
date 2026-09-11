@@ -121,6 +121,15 @@ def divvy_view(request):
             divvy[denom] -= 1
         elif action_name == 'reset':
             divvy = {denom: 0 for denom in cl.COIN_LADDER}
+        elif action_name == 'quickplay':
+            # Quickplay is a single "just get me playing" action: it fills
+            # the divvy and immediately starts the game, same as picking a
+            # reasonable split by hand and then confirming it.
+            game = tl.GameLogic.new()
+            game.wallet = tl.quickplay_divvy(cl.STARTING_BANK)
+            game.save(request.session)
+            request.session.pop('divvy', None)
+            return redirect('blackjack:bet')
         elif action_name == 'confirm':
             if total == cl.STARTING_BANK:
                 game = tl.GameLogic.new()
@@ -135,7 +144,10 @@ def divvy_view(request):
     total = sum(d * c for d, c in divvy.items())
     context = dict(
         divvy=divvy, total=total, remaining=cl.STARTING_BANK - total,
-        coin_ladder=cl.COIN_LADDER, starting_bank=cl.STARTING_BANK, error=error,
+        # A coin bigger than the whole bank can never be added, so it's left
+        # off the ladder entirely instead of shown permanently disabled.
+        coin_ladder=[denom for denom in cl.COIN_LADDER if denom <= cl.STARTING_BANK],
+        starting_bank=cl.STARTING_BANK, error=error,
     )
     return render_table(request, 'blackjack/table/divvy.html', context)
 
@@ -170,20 +182,24 @@ def bet_view(request):
         action_name = request.POST.get('action')
         denom = request.POST.get('denom')
         denom = int(denom) if denom and denom.isdigit() and int(denom) in cl.COIN_LADDER else None
+        count = request.POST.get('count')
+        # A shift/ctrl-click sends a huge sentinel count meaning "as many as
+        # I have"; bet_coin/unbet_coin already clamp to what's on hand.
+        count = int(count) if count and count.isdigit() else 1
 
         if action_name == 'bet_coin' and denom is not None:
-            game.bet_coin(denom)
+            game.bet_coin(denom, count)
         elif action_name == 'unbet_coin' and denom is not None:
-            game.unbet_coin(denom)
-        elif action_name == 'all_in':
-            game.bet_all()
+            game.unbet_coin(denom, count)
         elif action_name == 'clear':
             game.clear_bet()
         elif action_name == 'break' and denom is not None:
             game.break_coin(denom)
         elif action_name == 'merge' and denom is not None:
             game.merge_coins(denom)
-        elif action_name == 'place_bet':
+        elif action_name in ('place_bet', 'quickplay'):
+            if action_name == 'quickplay':
+                game.quickplay_bet()
             if game.bet > 0:
                 game.check_deck()
                 game.save(request.session)
@@ -192,7 +208,10 @@ def bet_view(request):
 
         game.save(request.session)
 
-    context = game_context(request, game, exchange=tl.ladder_options(game.wallet), error=error)
+    context = game_context(
+        request, game, merge_options=tl.merge_options(game.wallet),
+        break_options=tl.break_options(game.wallet), error=error,
+    )
     return render_table(request, 'blackjack/table/bet.html', context)
 
 

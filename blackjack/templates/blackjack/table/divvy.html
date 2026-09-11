@@ -1,16 +1,9 @@
 {% include "blackjack/table/header.html" %}
 
-<div class="left-info">
-    <h3>Remaining:</h3>
-    <p>{{ remaining }}</p>
-</div>
-
-<div class="left-button">
-    <form class="button-form" hx-post="{% url 'blackjack:divvy' %}"
-        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
-        {% csrf_token %}
-        <input name="action" class="button red clear" type="submit" value="Reset"/>
-    </form>
+<div class="info-panel">
+    <div class="stat-card">
+        <div class="stat"><span class="stat-label">Remaining</span><span class="stat-value stat-bank">{{ remaining }}</span></div>
+    </div>
 </div>
 
 <div class="center">
@@ -28,8 +21,9 @@
             <input type="hidden" name="denom" value="{{ denom }}"/>
             <button type="submit" class="c{{ denom }} first_ring" title="Remove one {{ denom }} coin">
                 <div class="second_ring"><div class="third_ring">
-                    <p>{{ denom }}</p><p class="coin-count">×{{ count }}</p>
+                    <p>{{ denom }}</p>
                 </div></div>
+                <span class="coin-count">×{{ count }}</span>
             </button>
         </form>
         {% endif %}
@@ -52,10 +46,23 @@
     </div>
 </div>
 
-<div class="right-button">
+<div class="button-panel">
     <form class="button-form" hx-post="{% url 'blackjack:divvy' %}"
         hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
         {% csrf_token %}
-        <input name="action" class="button" type="submit" value="Start Playing"/>
+        <input type="hidden" name="action" value="quickplay"/>
+        <input class="button" type="submit" value="Quickplay"/>
+    </form>
+    <form class="button-form" hx-post="{% url 'blackjack:divvy' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="confirm"/>
+        <input class="button" type="submit" value="Start Playing"/>
+    </form>
+    <form class="button-form" hx-post="{% url 'blackjack:divvy' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="reset"/>
+        <input class="button red clear" type="submit" value="Reset"/>
     </form>
 </div>

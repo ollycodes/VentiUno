@@ -72,21 +72,42 @@ class GameLogic:
     # wallet and pit (or up/down the denomination ladder), so there's no
     # amount validation to get wrong: a coin either exists to move or it
     # doesn't.
-    def bet_coin(self, denom):
-        if self.wallet.get(denom, 0) > 0:
-            self.wallet[denom] -= 1
-            self.pit[denom] = self.pit.get(denom, 0) + 1
+    def bet_coin(self, denom, count=1):
+        count = min(count, self.wallet.get(denom, 0))
+        if count > 0:
+            self.wallet[denom] -= count
+            self.pit[denom] = self.pit.get(denom, 0) + count
 
-    def unbet_coin(self, denom):
-        if self.pit.get(denom, 0) > 0:
-            self.pit[denom] -= 1
-            self.wallet[denom] = self.wallet.get(denom, 0) + 1
+    def unbet_coin(self, denom, count=1):
+        count = min(count, self.pit.get(denom, 0))
+        if count > 0:
+            self.pit[denom] -= count
+            self.wallet[denom] = self.wallet.get(denom, 0) + count
 
-    def bet_all(self):
-        for denom, count in list(self.wallet.items()):
+    def quickplay_bet(self):
+        """
+        A modest, no-thought bet for a player who'd rather keep playing
+        than size every bet by hand: clears whatever's already wagered,
+        then bets about a fifth of the bankroll. If the wallet is all big
+        chips, breaks them down first so the bet doesn't have to be one
+        oversized coin — favoring a longer session over a big swing.
+        """
+        self.clear_bet()
+        target = max(1, self.coins // 5) if self.coins > 0 else 0
+        if target <= 0:
+            return
+
+        held = [denom for denom, count in self.wallet.items() if count > 0]
+        while held and min(held) > target:
+            self.break_coin(min(held))
+            held = [denom for denom, count in self.wallet.items() if count > 0]
+
+        remaining = target
+        for denom in sorted(cl.COIN_LADDER, reverse=True):
+            count = min(self.wallet.get(denom, 0), remaining // denom)
             if count:
-                self.pit[denom] = self.pit.get(denom, 0) + count
-                self.wallet[denom] = 0
+                self.bet_coin(denom, count)
+                remaining -= count * denom
 
     def clear_bet(self):
         for denom, count in list(self.pit.items()):
@@ -197,27 +218,53 @@ class GameLogic:
         session['game'] = self.to_session_dict()
 
 
-def ladder_options(wallet):
+def quickplay_divvy(bank):
     """
-    Per-denomination break/merge availability for the coin-exchange UI.
-    Each entry always includes 'denom' and 'count'; 'break_*'/'merge_*' keys
-    are only present where that action is actually possible right now.
+    A "reasonable" starting rack: weighted toward small change (1/5) with a
+    light dusting of quarters, so a player starts out mostly holding low
+    chips and works their way up to bigger denominations by merging or
+    winning bets, rather than starting there already.
     """
+    weights = {1: 0.35, 5: 0.35, 25: 0.30}
+    divvy = {denom: 0 for denom in cl.COIN_LADDER}
+    remaining = bank
+    for denom in (25, 5, 1):
+        count = int(bank * weights[denom]) // denom
+        divvy[denom] = count
+        remaining -= count * denom
+
+    # Whatever's left after flooring each share lands on the 1 coin, so the
+    # total always matches bank exactly.
+    divvy[1] += remaining
+    return divvy
+
+
+_NUMBER_WORDS = {2: 'two', 3: 'three', 4: 'four', 5: 'five', 10: 'ten'}
+
+
+def merge_options(wallet, limit=2):
+    """Up to `limit` merge suggestions, largest mergeable denomination first."""
     options = []
-    for idx, denom in enumerate(cl.COIN_LADDER):
+    for idx in reversed(range(len(cl.COIN_LADDER) - 1)):
+        if len(options) >= limit:
+            break
+        denom = cl.COIN_LADDER[idx]
         count = wallet.get(denom, 0)
-        entry = dict(denom=denom, count=count)
-        if idx > 0:
-            smaller = cl.COIN_LADDER[idx - 1]
-            ratio = denom // smaller
-            if count >= 1:
-                entry['break_target'] = smaller
-                entry['break_ratio'] = ratio
-        if idx < len(cl.COIN_LADDER) - 1:
-            larger = cl.COIN_LADDER[idx + 1]
-            ratio = larger // denom
-            if count >= ratio:
-                entry['merge_target'] = larger
-                entry['merge_ratio'] = ratio
-        options.append(entry)
+        larger = cl.COIN_LADDER[idx + 1]
+        ratio = larger // denom
+        if count >= ratio:
+            word = _NUMBER_WORDS.get(ratio, str(ratio))
+            options.append(dict(action='merge', denom=denom, label=f"Merge {word} {denom} chips"))
+    return options
+
+
+def break_options(wallet, limit=2):
+    """Up to `limit` break suggestions, largest breakable denomination first."""
+    options = []
+    for idx in reversed(range(1, len(cl.COIN_LADDER))):
+        if len(options) >= limit:
+            break
+        denom = cl.COIN_LADDER[idx]
+        if wallet.get(denom, 0) >= 1:
+            options.append(dict(action='break', denom=denom, label=f"Break {denom}"))
     return options

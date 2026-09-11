@@ -7,19 +7,21 @@
     <meta name="keywords" content="blackjack game, play blackjack"/>
     <meta name="description" content="A simple game of blackjack."/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" href="{% static 'blackjack/style.css' %}"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <script src="{% static 'blackjack/js/htmx.min.js' %}"></script>
+    <script src="{% static 'blackjack/js/chips.js' %}" defer></script>
     <title>{% block title %}Blackjack!{% endblock title %}</title>
 </head>
 
 <body>
     <main>
-        <div id="wood-border">
-            <div id="table">
-                {% block content %}
-                {% endblock content %}
-            </div>
+        <div id="table">
+            {% block content %}
+            {% endblock content %}
         </div>
     </main>
 </body>

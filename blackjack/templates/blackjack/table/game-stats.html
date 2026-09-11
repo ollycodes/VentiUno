@@ -1,0 +1,10 @@
+<div class="stat-card">
+    <div class="stat"><span class="stat-label">Bank</span><span class="stat-value stat-bank">{{ game.coins }}</span></div>
+    {% if show_bet %}
+    <div class="stat"><span class="stat-label">Bet</span><span class="stat-value stat-bet">{{ game.bet }}</span></div>
+    {% endif %}
+    {% if show_shoe %}
+    <div class="stat"><span class="stat-label">Dealer's Shoe</span><span class="stat-value stat-shoe">{{ game.deck_card_count }}</span></div>
+    <div class="stat"><span class="stat-label">High Score</span><span class="stat-value stat-score">{{ game.high_score }}</span></div>
+    {% endif %}
+</div>
