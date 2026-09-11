@@ -147,11 +147,6 @@ tbody tr:hover {
     font-size: xx-large;
 }
 
-.b-form {
-    padding: 10px;
-    width: 50%;
-}
-
 .header {
     grid-area: h;
 }
@@ -507,14 +502,6 @@ tbody tr:hover {
 .first_ring:active {
     transform: scale(0.95);
     box-shadow: 0px 0px 1px black;
-}
-
-.hidden {
-    visibility: hidden;
-}
-
-.hidden:active {
-    transform: translateY(300px);
 }
 
 .exchange {

@@ -162,8 +162,14 @@ def table_view(request):
             context = _lost_context(request, game)
             return render_table(request, 'blackjack/table/lost.html', context)
         return redirect('blackjack:bet')
-    elif game.player_total >= 21 or game.dealer_card_count > 2:
-        game.conclude_bet()
+    elif game.player_total == 21:
+        # A natural resolves immediately (the dealer doesn't get a turn
+        # against it); hitting your way to 21 is really an automatic
+        # stand, so the dealer still has to play out from here.
+        if game.is_natural:
+            game.conclude_bet()
+        else:
+            game.stand()
         game.save(request.session)
         if game.coins == 0:
             context = _lost_context(request, game)
