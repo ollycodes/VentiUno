@@ -146,18 +146,39 @@ class GameLogic:
             self.player_hand = cl.draw_cards(self.deck, 2)
             self.dealer_hand = cl.draw_cards(self.deck, 2)
 
+    @property
+    def is_natural(self):
+        """A blackjack dealt straight from the first two cards, not built up by hitting."""
+        return len(self.player_hand) == 2 and self.player_total == 21
+
+    def _pay_out(self, amount):
+        """Credits `amount` dollars to the wallet, broken into coins largest-first."""
+        for denom in sorted(cl.COIN_LADDER, reverse=True):
+            count, amount = divmod(amount, denom)
+            if count:
+                self.wallet[denom] = self.wallet.get(denom, 0) + count
+
     def conclude_bet(self):
         bet = self.bet
         # Winnings are always paid in the same denominations that were
         # wagered, just multiplied — never converted into other coins.
+        # The one exception is a natural blackjack's 3:2 bonus, which can't
+        # land on a whole-dollar multiple of the wagered coins, so that
+        # bonus half is paid out fresh instead (see _pay_out).
         if self.winner == "Draw":
             for denom, count in self.pit.items():
                 if count:
                     self.wallet[denom] = self.wallet.get(denom, 0) + count
         elif self.winner == "You won":
-            for denom, count in self.pit.items():
-                if count:
-                    self.wallet[denom] = self.wallet.get(denom, 0) + count * 2
+            if self.is_natural:
+                for denom, count in self.pit.items():
+                    if count:
+                        self.wallet[denom] = self.wallet.get(denom, 0) + count
+                self._pay_out(bet // 2)
+            else:
+                for denom, count in self.pit.items():
+                    if count:
+                        self.wallet[denom] = self.wallet.get(denom, 0) + count * 2
         self.pit = {denom: 0 for denom in cl.COIN_LADDER}
         if self.biggest_bet < bet:
             self.biggest_bet = bet
@@ -168,7 +189,7 @@ class GameLogic:
         self.player_hand += cl.draw_cards(self.deck, 1)
 
     def stand(self):
-        while self.dealer_total < 17 and self.dealer_total < self.player_total:
+        while self.dealer_total < 17:
             self.dealer_hand += cl.draw_cards(self.deck, 1)
         self.conclude_bet()
 
