@@ -15,9 +15,13 @@ def _card_dict(rank, suit='spades'):
 
 
 def seed_game(client, player_hand, dealer_hand, wallet=None, pit=None,
-              deck=None, high_score=0, biggest_bet=0):
+              deck=None, split_hand=None, split_pit=None, active_hand='main',
+              insurance_pit=None, insurance_decided=True,
+              high_score=0, biggest_bet=0):
     wallet = wallet or {}
     pit = pit or {}
+    split_pit = split_pit or {}
+    insurance_pit = insurance_pit or {}
     session = client.session
     session['game'] = dict(
         deck=[_card_dict(rank) for rank in (deck or [])],
@@ -25,6 +29,11 @@ def seed_game(client, player_hand, dealer_hand, wallet=None, pit=None,
         dealer_hand=[_card_dict(rank) for rank in dealer_hand],
         wallet={str(denom): wallet.get(denom, 0) for denom in cl.COIN_LADDER},
         pit={str(denom): pit.get(denom, 0) for denom in cl.COIN_LADDER},
+        split_hand=[_card_dict(rank) for rank in (split_hand or [])],
+        split_pit={str(denom): split_pit.get(denom, 0) for denom in cl.COIN_LADDER},
+        active_hand=active_hand,
+        insurance_pit={str(denom): insurance_pit.get(denom, 0) for denom in cl.COIN_LADDER},
+        insurance_decided=insurance_decided,
         high_score=high_score,
         biggest_bet=biggest_bet,
     )
@@ -37,30 +46,6 @@ class TableViewTests(TestCase):
         response = self.client.get(reverse('blackjack:table'))
         self.assertContains(response, 'id="hit"')
         self.assertContains(response, 'id="stand"')
-
-    def test_natural_blackjack_resolves_without_dealer_drawing(self):
-        seed_game(self.client, ['ace', 'king'], ['ten', 'six'], pit={25: 1})
-        response = self.client.get(reverse('blackjack:table'))
-        self.assertContains(response, 'You won')
-        game = tl.GameLogic.from_session(self.client.session)
-        self.assertEqual(len(game.dealer_hand), 2)
-
-    def test_hitting_to_21_still_lets_the_dealer_play_out(self):
-        # Regression test: table_view used to conclude the bet the instant
-        # the player's total hit 21, even when that 21 came from hitting
-        # (not a natural) — freezing the dealer's hand mid-draw.
-        seed_game(
-            self.client,
-            player_hand=['ten', 'nine', 'two'],  # 21 via a hit, not natural
-            dealer_hand=['ten', 'two'],  # 12, must still draw
-            deck=['five'],  # -> 17
-            pit={25: 1}, wallet={1: 10},
-        )
-        response = self.client.get(reverse('blackjack:table'))
-        self.assertEqual(response.status_code, 200)
-        game = tl.GameLogic.from_session(self.client.session)
-        self.assertGreater(len(game.dealer_hand), 2)
-        self.assertEqual(game.dealer_total, 17)
 
     def test_no_bet_and_no_coins_shows_lost(self):
         seed_game(self.client, [], [], wallet={}, pit={})
@@ -90,6 +75,25 @@ class ActionViewTests(TestCase):
         response = self.client.post(reverse('blackjack:action'), {'action': 'stand'})
         self.assertContains(response, 'You won')
 
+    def test_hitting_to_21_still_lets_the_dealer_play_out(self):
+        # Regression test: table_view used to conclude the bet the instant
+        # the player's total hit 21, even when that 21 came from hitting
+        # (not a natural) — freezing the dealer's hand mid-draw. That
+        # resolution now lives in hit() itself, exercised the moment the
+        # hit happens rather than discovered later on a GET.
+        seed_game(
+            self.client,
+            player_hand=['ten', 'nine'],  # about to hit to 21, not natural
+            dealer_hand=['ten', 'two'],  # 12, must still draw
+            deck=['five', 'two'],  # 'two' lands the hit on 21; 'five' is the dealer's forced draw to 17
+            pit={25: 1}, wallet={1: 10},
+        )
+        response = self.client.post(reverse('blackjack:action'), {'action': 'hit'})
+        self.assertEqual(response.status_code, 200)
+        game = tl.GameLogic.from_session(self.client.session)
+        self.assertGreater(len(game.dealer_hand), 2)
+        self.assertEqual(game.dealer_total, 17)
+
 
 class BetViewTests(TestCase):
     def setUp(self):
@@ -111,14 +115,37 @@ class BetViewTests(TestCase):
         response = self.client.post(reverse('blackjack:bet'), {'action': 'place_bet'})
         self.assertContains(response, 'Put at least one coin in')
 
-    def test_place_bet_redirects_to_table(self):
+    def test_place_bet_deals_a_hand_directly(self):
+        # bet_view renders the resulting screen itself (pending, insurance,
+        # or an immediate resolution) rather than redirecting, so whichever
+        # request deals the cards is also the one that shows the outcome.
         self.client.post(reverse('blackjack:bet'), {'action': 'bet_coin', 'denom': '25', 'count': '1'})
         response = self.client.post(reverse('blackjack:bet'), {'action': 'place_bet'})
-        self.assertRedirects(response, reverse('blackjack:table'))
+        self.assertEqual(response.status_code, 200)
+        game = tl.GameLogic.from_session(self.client.session)
+        self.assertEqual(len(game.player_hand), 2)
 
-    def test_quickplay_bets_and_places(self):
+    def test_quickplay_bets_and_deals(self):
         response = self.client.post(reverse('blackjack:bet'), {'action': 'quickplay'})
-        self.assertRedirects(response, reverse('blackjack:table'))
+        self.assertEqual(response.status_code, 200)
+        game = tl.GameLogic.from_session(self.client.session)
+        self.assertEqual(len(game.player_hand), 2)
+
+    def test_natural_blackjack_resolves_without_dealer_drawing(self):
+        # check_deck() only reshuffles when the deck has 52 cards or fewer,
+        # so a deck padded past that survives deal_hand() intact — letting
+        # the ending cards (drawn last-to-first) be pinned exactly:
+        # player gets ace, king (natural 21); dealer gets ten, six (16).
+        seed_game(
+            self.client, [], [],
+            deck=['two'] * 60 + ['six', 'ten', 'king', 'ace'],
+            pit={25: 1}, wallet={},
+        )
+        response = self.client.post(reverse('blackjack:bet'), {'action': 'place_bet'})
+        self.assertContains(response, 'You won')
+        game = tl.GameLogic.from_session(self.client.session)
+        self.assertEqual(len(game.dealer_hand), 2)
+        self.assertEqual(game.coins, 25 + 12)  # bet back, plus the 3:2 bonus
 
     def test_merge_combines_coins(self):
         self.client.post(reverse('blackjack:bet'), {'action': 'merge', 'denom': '5'})
@@ -138,6 +165,75 @@ class BetViewTests(TestCase):
         game = tl.GameLogic.from_session(self.client.session)
         self.assertEqual(game.pit[25], 0)
         self.assertEqual(game.wallet[25], 4)
+
+
+class InsuranceViewTests(TestCase):
+    def test_ace_up_card_shows_insurance_prompt(self):
+        seed_game(
+            self.client, ['ten', 'nine'], ['ace', 'six'],
+            pit={25: 1}, wallet={1: 20}, insurance_decided=False,
+        )
+        response = self.client.get(reverse('blackjack:table'))
+        self.assertContains(response, 'Take Insurance')
+
+    def test_taking_insurance_against_a_dealer_natural_pays_out(self):
+        seed_game(
+            self.client, ['ten', 'nine'], ['ace', 'king'],  # dealer has blackjack
+            pit={25: 1}, wallet={1: 20}, insurance_decided=False,
+        )
+        response = self.client.post(reverse('blackjack:action'), {'action': 'insurance_yes'})
+        self.assertEqual(response.status_code, 200)
+        game = tl.GameLogic.from_session(self.client.session)
+        # bet=25 -> insurance_amount=12, paid 2:1 (=24) plus the wager back;
+        # the main hand still loses to the dealer's natural.
+        self.assertEqual(game.coins, 20 + 24)
+        self.assertTrue(game.insurance_decided)
+
+    def test_declining_insurance_against_a_dealer_natural_still_loses_the_hand(self):
+        seed_game(
+            self.client, ['ten', 'nine'], ['ace', 'king'],
+            pit={25: 1}, wallet={1: 20}, insurance_decided=False,
+        )
+        response = self.client.post(reverse('blackjack:action'), {'action': 'insurance_no'})
+        game = tl.GameLogic.from_session(self.client.session)
+        self.assertEqual(game.coins, 20)
+        self.assertContains(response, 'Dealer won')
+
+    def test_no_dealer_blackjack_continues_to_pending(self):
+        seed_game(
+            self.client, ['ten', 'nine'], ['ace', 'six'],
+            pit={25: 1}, wallet={1: 20}, insurance_decided=False,
+        )
+        response = self.client.post(reverse('blackjack:action'), {'action': 'insurance_no'})
+        self.assertContains(response, 'id="hit"')
+        game = tl.GameLogic.from_session(self.client.session)
+        self.assertTrue(game.insurance_decided)
+
+
+class SplitDoubleViewTests(TestCase):
+    def test_split_offers_two_hands(self):
+        seed_game(
+            self.client, ['eight', 'eight'], ['ten', 'six'],
+            deck=['two', 'three'],
+            pit={25: 1}, wallet={25: 1},
+        )
+        response = self.client.post(reverse('blackjack:action'), {'action': 'split'})
+        self.assertContains(response, 'Hand 2')
+        game = tl.GameLogic.from_session(self.client.session)
+        self.assertEqual(len(game.player_hand), 2)
+        self.assertEqual(len(game.split_hand), 2)
+        self.assertEqual(game.split_bet, 25)
+
+    def test_double_down_deals_one_card_and_ends_the_turn(self):
+        seed_game(
+            self.client, ['five', 'six'], ['ten', 'two'],
+            deck=['five', 'nine'],
+            pit={25: 1}, wallet={25: 1},
+        )
+        self.client.post(reverse('blackjack:action'), {'action': 'double'})
+        game = tl.GameLogic.from_session(self.client.session)
+        self.assertEqual(len(game.player_hand), 3)
+        self.assertEqual(game.bet, 0)
 
 
 class DivvyViewTests(TestCase):

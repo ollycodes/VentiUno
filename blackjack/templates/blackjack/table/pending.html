@@ -23,27 +23,58 @@
         {% endfor %}
     </div>
 
-    <h2>Your hand</h2>
-    <div class="hand">
+    <h2>Your hand{% if game.split_hand %} — Hand 1{% endif %}</h2>
+    <div class="hand{% if game.split_hand and game.active_hand == 'main' %} active-hand{% endif %}">
         {% for card in game.player_hand %}
         <div class="card{% if forloop.last %} card-draw{% endif %}">
             <img height="333" width="234"
-                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}" 
+                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}"
                 alt="{{ card.name }}"/>
         </div>
         {% endfor %}
     </div>
+
+    {% if game.split_hand %}
+    <h2>Your hand — Hand 2</h2>
+    <div class="hand{% if game.active_hand == 'split' %} active-hand{% endif %}">
+        {% for card in game.split_hand %}
+        <div class="card{% if forloop.last %} card-draw{% endif %}">
+            <img height="333" width="234"
+                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}"
+                alt="{{ card.name }}"/>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 
 <div class="button-panel">
+    {% if game.can_hit %}
     <form class="button-form" hx-post="{% url 'blackjack:action' %}"
         hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
         {% csrf_token %}
         <input name="action" class="button" type="submit" id="hit" value="hit"/>
     </form>
+    {% endif %}
     <form class="button-form" hx-post="{% url 'blackjack:action' %}"
         hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
         {% csrf_token %}
         <input name="action" class="button" type="submit" id="stand" value="stand"/>
     </form>
+    {% if game.can_double %}
+    <form class="button-form" hx-post="{% url 'blackjack:action' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="double"/>
+        <input class="button" type="submit" value="Double Down"/>
+    </form>
+    {% endif %}
+    {% if game.can_split %}
+    <form class="button-form" hx-post="{% url 'blackjack:action' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="split"/>
+        <input class="button" type="submit" value="Split"/>
+    </form>
+    {% endif %}
 </div>

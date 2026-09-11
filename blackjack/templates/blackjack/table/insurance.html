@@ -1,0 +1,54 @@
+{% load static %}
+
+{% include "blackjack/table/header.html" %}
+
+<div class="info-panel">
+    {% include "blackjack/table/game-stats.html" with show_bet=True show_shoe=True %}
+</div>
+
+<div class="center">
+    <h2>Dealer shows an Ace</h2>
+    <div class="hand">
+        {% for card in game.dealer_hand %}
+        <div class="card">
+            <img height="333" width="234"
+                {% if forloop.first %}
+                    src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}"
+                    alt="{{ card.name }}"
+                {% else %}
+                    src="{% static 'blackjack/svgs/backs/' %}{{ deck_style }}.svg"
+                    alt="card cover"
+                {% endif %}/>
+        </div>
+        {% endfor %}
+    </div>
+
+    <h2>Your hand</h2>
+    <div class="hand">
+        {% for card in game.player_hand %}
+        <div class="card">
+            <img height="333" width="234"
+                src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}"
+                alt="{{ card.name }}"/>
+        </div>
+        {% endfor %}
+    </div>
+    <p class="chip-hint">Insurance costs {{ game.insurance_amount }} and pays 2:1 if the dealer has blackjack — otherwise it's lost.</p>
+</div>
+
+<div class="button-panel">
+    {% if game.can_insure %}
+    <form class="button-form" hx-post="{% url 'blackjack:action' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="insurance_yes"/>
+        <input class="button" type="submit" value="Take Insurance"/>
+    </form>
+    {% endif %}
+    <form class="button-form" hx-post="{% url 'blackjack:action' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="insurance_no"/>
+        <input class="button red" type="submit" value="No Thanks"/>
+    </form>
+</div>

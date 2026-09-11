@@ -325,6 +325,14 @@ tbody tr:hover {
     display: grid;
     grid-template-columns: repeat(16, 10%);
     grid-template-rows: none;
+    transition: box-shadow 0.2s ease;
+}
+
+/* Marks which of two split hands the Hit/Stand/Double buttons currently
+   act on. */
+.hand.active-hand {
+    border-color: var(--cream);
+    box-shadow: 0 0 0 3px var(--gold-bright);
 }
 
 .card {

@@ -2,7 +2,10 @@
 {% include "blackjack/table/header.html" %}
 
 <div class="info-panel">
-    <p class="{{ game.winner }}">{{ game.winner }}!</p>
+    <p class="{{ game.winner }}">{% if game.split_hand %}Hand 1: {% endif %}{{ game.winner }}!</p>
+    {% if game.split_hand %}
+    <p class="{{ game.split_winner }}">Hand 2: {{ game.split_winner }}!</p>
+    {% endif %}
     {% include "blackjack/table/game-stats.html" with show_shoe=True %}
 </div>
 
@@ -20,7 +23,7 @@
         {% endfor %}
     </div>
 
-    <h2>Your hand</h2>
+    <h2>Your hand{% if game.split_hand %} — Hand 1{% endif %}</h2>
     <div class="hand">
         {% for card in game.player_hand %}
             <div
@@ -32,6 +35,20 @@
             </div>
         {% endfor %}
     </div>
+
+    {% if game.split_hand %}
+    <h2>Your hand — Hand 2</h2>
+    <div class="hand">
+        {% for card in game.split_hand %}
+            <div class="card">
+                <img
+                    height="333" width="234"
+                    src="{% static 'blackjack/svgs/fronts/' %}{{ card.file_name }}"
+                    alt="{{ card.name }}"/>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     {% if submitted %}
     <p class="leaderboard-prompt">Thanks — your score is on the leaderboard!</p>
