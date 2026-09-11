@@ -1,27 +1,46 @@
+/*
+ * Theme palette pulled from the deck-back artwork (svgs/backs/*.svg is
+ * dominated by deep indigo, gold, maroon, near-black, and cream/white),
+ * so the UI chrome reads as part of the same table as the cards rather
+ * than a skin bolted on top of the green felt.
+ */
 :root {
-  --c1: #008888;
-  --c1-darker: #006666;
+  --felt: #0a4a33;
+  --ink: #1c2440;
+  --ink-light: #454f8c;
+  --gold: #d1a53d;
+  --gold-bright: #f0c869;
+  --cream: #f1e9d8;
+  --maroon: #7c2d2d;
+  --maroon-bright: #b0453f;
 
-  --c5: #bb66bb;
-  --c5-darker: #a050a0;
+  /*
+   * Chip colors follow standard poker chip conventions (see
+   * https://www.poker.org/poker-chip-values/): white/red/green/black/purple
+   * for 1/5/25/100/500, retinted to the palette above. 50 and 1000 aren't
+   * in the standard $1-$100000 ladder, so they borrow the next most common
+   * convention (blue, gold) using the theme's ink/gold tones.
+   */
+  --c1: #ffffff;
+  --c1-darker: #d6d6d6;
 
-  --c25: #ee7722;
-  --c25-darker: #d06010;
+  --c5: #a13d3d;
+  --c5-darker: #7a2b2b;
 
-  --c50: #eecc22;
-  --c50-darker: #d0b010;
+  --c25: #2f8f52;
+  --c25-darker: #1f6b3a;
 
-  --c100: #007722;
-  --c100-darker: #006010;
+  --c50: var(--ink-light);
+  --c50-darker: #232a57;
 
-  --c500: #9900dd;
-  --c500-darker: #7000b0;
+  --c100: #1a1a1a;
+  --c100-darker: #000000;
 
-  --c1000: #800000;
-  --c1000-darker: #600000;
+  --c500: #6a3f8f;
+  --c500-darker: #4a2b66;
 
-  --c0: #99aabb;
-  --c0-darker: #7799aa;
+  --c1000: var(--gold);
+  --c1000-darker: #a87f24;
 }
 
 /* BASE ELEMENT STYLE */
@@ -30,17 +49,21 @@
 }
 
 body {
-    background: #000;
-    color: #dedede;
+    background: var(--felt);
+    color: var(--cream);
     font-family: sans-serif;
     font-size: 16px;
     margin: 0;
 }
 
 a {
-    color: #dedede;
+    color: var(--cream);
     font-weight: bold;
     padding: 0 1rem;
+}
+
+a:hover {
+    color: var(--gold-bright);
 }
 
 main {
@@ -48,6 +71,10 @@ main {
     display: flex;
     justify-content: center;
     min-height: 100vh;
+}
+
+h1, h2, h3, .button, .stat-value, .stat-label, .won, .Draw {
+    font-family: 'Cinzel', serif;
 }
 
 h1, h2, h3 {
@@ -75,46 +102,43 @@ tbody tr:hover {
     background-color: #008c64;
 }
 
-/* TABLE STYLE & GRID ALLOCATION */
-#wood-border {
-    background:
-    repeating-radial-gradient(circle at 25% 50%, transparent 0, #620 3px),
-    repeating-radial-gradient(circle at 75% 50%, transparent 0, #620 5px),
-    repeating-linear-gradient(#3B2200, #920, #3B2200);
-    background-color: #83481d;
-    border-radius: 7px 7px 30% 30%;
-    box-shadow: 0 0 10px #0006;
-    margin: 1rem;
-    padding: 20px;
-    width: 960px;
-    height: 740px;
-}
-
+/*
+ * TABLE STYLE & GRID ALLOCATION
+ * The felt is the entire view — no wood rail or bordered "table" object
+ * sitting on a black backdrop, just the play surface itself.
+ */
 #table {
-    background: linear-gradient(to top, rgba(255,255,255,0.15), rgba(255,255,255,0));
-    background-color: #00674c;
-    border-radius: 7px 7px 30% 30%;
-    box-shadow: inset 2px -2px 100px #0006, inset 2px -2px 7px black;
-    height: 100%;
+    background:
+    radial-gradient(ellipse at 50% 15%, rgba(255,255,255,0.10), transparent 55%),
+    radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.3) 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, transparent 1px, transparent 3px),
+    repeating-linear-gradient(-45deg, rgba(0,0,0,0.02) 0px, transparent 1px, transparent 3px);
+    background-color: var(--felt);
+    min-height: 100vh;
+    width: 100%;
     display: grid;
     grid-template-columns: 1fr 4fr 10fr 4fr 1fr;
-    grid-template-rows: 1fr 6fr 1fr 2fr;
+    grid-template-rows: auto 1fr;
     grid-template-areas:
     "h h h h h"
-    ". li c ri ."
-    ". lb c rb ."
-    ". . . . .";
+    ". info c buttons .";
+    padding: 20px 0 40px;
 }
 
 .pit {
     grid-row: 1;
-    border: solid 5px #eee;
+    border: solid 5px var(--cream);
     border-radius: 10px;
     padding: 5px;
     width: 100%;
     display: grid;
     grid-template-columns: repeat(4, 25%);
     grid-template-rows: 110px 110px;
+    transition: box-shadow 0.15s ease;
+}
+
+.pit.drag-over, .purse.drag-over {
+    box-shadow: inset 0 0 0 3px var(--gold-bright);
 }
 
 .pit p {
@@ -132,31 +156,81 @@ tbody tr:hover {
     grid-area: h;
 }
 
-.center, .left-info, .right-info {
+/*
+ * The info placard always lives on the left and every button always on
+ * the right — one fixed spot for each, rather than swapping sides from
+ * page to page, so the player never has to relocate them.
+ */
+.center, .info-panel, .button-panel {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 10px;
 }
 
 .center {
     grid-area: c;
 }
 
-.left-info {
-    grid-area: li;
+.info-panel {
+    grid-area: info;
 }
 
-.right-info {
-    grid-area: ri;
+.button-panel {
+    grid-area: buttons;
+    gap: 14px;
 }
 
-.left-button {
-    grid-area: lb;
+/*
+ * A little scoreboard placard for the game's numbers (Bank/Bet/Dealer's
+ * Shoe/High Score), grouped in one spot with bold, differently-colored
+ * values so they read at a glance instead of blending into plain text.
+ */
+.stat-card {
+    background: var(--ink);
+    border: 3px solid var(--gold);
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4), 0 4px 10px rgba(0, 0, 0, 0.45);
 }
 
-.right-button {
-    grid-area: rb;
+.stat {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.stat-label {
+    font-weight: 800;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    white-space: nowrap;
+}
+
+.stat-value {
+    font-weight: 900;
+    font-size: 1.4rem;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+    color: var(--cream);
+}
+
+.stat-bank { color: var(--gold-bright); }
+.stat-bet { color: var(--cream); }
+.stat-shoe { color: #96a3e0; }
+.stat-score { color: var(--maroon-bright); }
+
+.chip-hint {
+    color: rgba(241, 233, 216, 0.45);
+    font-size: 0.75rem;
+    margin: 4px 0 0;
+    text-align: center;
 }
 
 /* BUTTON & FORM STYLE */
@@ -179,50 +253,58 @@ tbody tr:hover {
     list-style: none;
     margin: 0 0 5px 0;
     padding: 0;
-    color: #e74c3c;
+    color: var(--maroon-bright);
     font-weight: bold;
     font-size: 0.85rem;
 }
 
 .button-form {
-    height: 100%;
-    width: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
 }
 
 .button {
     display: inline-block;
     font-family: inherit;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 15px;
     text-align: center;
     text-decoration: none;
-    color: white;
-    background-color: #2ecc71;
-    border: 2px solid white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    transition: all 0.3s ease;
-    height: 100%;
-    width: 100%;
+    color: var(--ink);
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    border: 2px solid rgba(241, 233, 216, 0.85);
+    border-radius: 8px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    height: auto;
+    width: auto;
+    min-width: 130px;
+    padding: 10px 16px;
 }
 
 .red {
-    background-color: #e74c3c;
+    color: var(--cream);
+    background: linear-gradient(180deg, var(--maroon-bright), var(--maroon));
 }
 
 .clear {
-    width: 90%;
+    min-width: 110px;
+    padding: 8px 14px;
+    font-size: 14px;
 }
 
 .button:hover {
-    background-color: white;
-    color: #2ecc71;
-    border: 2px solid #2ecc71;
+    background: var(--cream);
+    color: var(--gold);
+    border: 2px solid var(--gold);
 }
 
 .red:hover {
-    color: #e74c3c;
-    border: 2px solid #e74c3c;
+    color: var(--maroon-bright);
+    border: 2px solid var(--maroon-bright);
 }
 
 .button:active {
@@ -236,14 +318,12 @@ tbody tr:hover {
 }
 
 .small {
-    height: 10%;
-    width: 50%;
     margin: 10px 0;
 }
 
 /* HAND & CARD STYLES */
 .hand {
-    border: solid 5px #eee;
+    border: solid 5px var(--gold);
     border-radius: 10px;
     padding: 5px;
     width: 300px;
@@ -256,13 +336,61 @@ tbody tr:hover {
     border-radius: 10px;
     height: calc(333px * 0.7);
     width: calc(234px * 0.7);
+    position: relative;
+    border: 3px solid rgba(10, 10, 10, 0.6);
+    animation: card-idle 3.4s ease-in-out infinite;
 }
 
-.card:hover, .first_ring:hover {
+/* Stagger the idle bob per position so a hand doesn't move in lockstep
+   (cheap to fake — just an animation-delay per child, no JS). */
+.hand .card:nth-child(2) { animation-delay: 0.3s; }
+.hand .card:nth-child(3) { animation-delay: 0.6s; }
+.hand .card:nth-child(4) { animation-delay: 0.9s; }
+.hand .card:nth-child(5) { animation-delay: 1.2s; }
+
+@keyframes card-idle {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-5px) rotate(0.6deg); }
+}
+
+/* A visible diagonal gloss streak plus a slight top/bottom vignette, so
+   the card reads as glossy stock rather than a flat printed image even
+   on a high-contrast (e.g. OLED) screen; a single static gradient, no
+   extra assets. */
+.card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 7px;
+    background:
+        linear-gradient(125deg,
+            rgba(255,255,255,0) 25%,
+            rgba(255,255,255,0.6) 45%,
+            rgba(255,255,255,0.15) 58%,
+            rgba(255,255,255,0) 70%),
+        linear-gradient(to bottom, rgba(0,0,0,0.12), transparent 18%, transparent 82%, rgba(0,0,0,0.22));
+    pointer-events: none;
+}
+
+.card:hover {
+    animation: none;
     transform:
     translateX(-0.5rem)
     translateY(-1rem)
     rotate(-0.001turn);
+    transition: 0.2s ease-out;
+    transition-delay: 0s;
+    box-shadow: 0 0px 10px 2px black;
+}
+
+/*
+ * Coin buttons need a hover effect that doesn't relocate the clickable box:
+ * translateY like .card:hover uses would slide the button out from under a
+ * stationary cursor, causing :hover to flicker on/off and eating clicks.
+ * scale() grows from the center in place, so the cursor stays over it.
+ */
+.first_ring:hover {
+    transform: scale(1.08);
     transition: 0.2s ease-out;
     transition-delay: 0s;
     box-shadow: 0 0px 10px 2px black;
@@ -279,19 +407,22 @@ tbody tr:hover {
 }
 
 .card-draw {
-    animation: slideInRight 1s ease-in-out;
+    /* Slide in once, then hand off to the same idle bob every other card
+       has — the delay just lets the slide finish first. */
+    animation: slideInRight 0.8s ease-in-out, card-idle 3.4s ease-in-out 0.8s infinite;
 }
 
 /* COIN STYLES */
 .purse {
     grid-row: 3;
-    border: solid 5px #eee;
+    border: solid 5px var(--cream);
     border-radius: 10px;
     padding: 5px;
     width: 100%;
     display: grid;
     grid-template-columns: repeat(4, 25%);
     grid-template-rows: 110px 110px;
+    transition: box-shadow 0.15s ease;
 }
 
 /*
@@ -304,14 +435,23 @@ tbody tr:hover {
     height: 100px;
     width: 100px;
     border-radius: 50%;
-    border: 10px dashed white;
+    border: 10px dashed var(--cream);
     box-shadow: 1px 1px 3px black;
     background-color: var(--coin);
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 1px;
+    position: relative;
     transition: transform 1s ease-out;
+}
+
+.first_ring[draggable="true"] {
+    cursor: grab;
+}
+
+.first_ring.dragging {
+    opacity: 0.4;
 }
 
 .second_ring {
@@ -326,31 +466,46 @@ tbody tr:hover {
 }
 
 .third_ring {
-    border: 2px dashed white;
+    border: 2px dashed var(--cream);
     height: 100%;
     width: 100%;
     border-radius: 50%;
     background-color: var(--coin);
     box-shadow: 0 0 0 3px var(--coin);
+    align-content: center;
 }
 
 .third_ring p {
     text-align: center;
-    color: white;
+    color: var(--cream);
     font-weight: bolder;
     font-size: large;
     margin: 0;
 }
 
-.third_ring .coin-count {
-    font-size: small;
-    font-weight: normal;
-    opacity: 0.8;
+/* White and gold chips are too light for cream text to read on. */
+.c1 .third_ring p, .c1000 .third_ring p {
+    color: var(--ink);
+}
+
+/* The coin count sits as a small badge pinned to the chip's corner instead
+   of an inline "xN" label. */
+.first_ring > .coin-count {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    z-index: 1;
+    background-color: var(--ink);
+    color: var(--cream);
+    font-size: 0.7rem;
+    font-weight: bold;
+    border: 1px solid var(--cream);
+    border-radius: 999px;
+    padding: 2px 6px;
 }
 
 .first_ring:active {
-    transform: translateY(-300px);
-    opacity: 0;
+    transform: scale(0.95);
     box-shadow: 0px 0px 1px black;
 }
 
@@ -363,30 +518,27 @@ tbody tr:hover {
 }
 
 .exchange {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     width: 100%;
-    max-width: 500px;
     margin-top: 10px;
 }
 
-.exchange-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.exchange-label {
-    font-weight: bold;
-    min-width: 70px;
-}
-
 .exchange-button {
-    height: auto;
-    width: auto;
-    font-size: 0.85rem;
-    padding: 5px 10px;
+    min-width: 0;
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    color: var(--gold-bright);
+    background: var(--ink);
+    border: 2px solid var(--gold);
+}
+
+.exchange-button:hover {
+    color: var(--ink);
+    background: var(--gold);
+    border-color: var(--gold-bright);
 }
 
 .c1 { --coin: var(--c1); --coin-darker: var(--c1-darker); }
@@ -396,15 +548,16 @@ tbody tr:hover {
 .c100 { --coin: var(--c100); --coin-darker: var(--c100-darker); }
 .c500 { --coin: var(--c500); --coin-darker: var(--c500-darker); }
 .c1000 { --coin: var(--c1000); --coin-darker: var(--c1000-darker); }
-.c0 { --coin: var(--c0); --coin-darker: var(--c0-darker); }
 
 /* OPTIONS / DECK STYLE PICKER */
 .deck-style-grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    /* Fixed column widths (rather than max-width + wrap) guarantee 4 per
+       row regardless of how wide a style's label text is, and fit inside
+       the table's ~460px center column. */
+    grid-template-columns: repeat(4, 100px);
     justify-content: center;
-    gap: 10px;
-    max-width: 700px;
+    gap: 8px;
     padding: 10px;
 }
 
@@ -416,26 +569,30 @@ tbody tr:hover {
     background: none;
     border: 2px solid transparent;
     border-radius: 10px;
-    color: #dedede;
+    color: var(--cream);
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
     padding: 5px;
+    font-size: 0.85rem;
     transition: all 0.2s ease;
 }
 
 .deck-style-swatch img {
+    width: 80px;
+    height: auto;
     border-radius: 6px;
 }
 
 .deck-style-swatch:hover {
-    border-color: #2ecc71;
+    border-color: var(--gold);
 }
 
 .deck-style-option.selected .deck-style-swatch {
-    border-color: #2ecc71;
-    background-color: rgba(46, 204, 113, 0.2);
+    border-color: var(--gold);
+    background-color: rgba(209, 165, 61, 0.2);
 }
 
 /* LEADERBOARD PROMPT */
@@ -445,18 +602,35 @@ tbody tr:hover {
 }
 
 /* WINNER STYLES */
+/*
+ * A hand that resolves the instant it's dealt (a natural blackjack, or a
+ * push) would otherwise jump straight from the bet screen to this banner
+ * with no beat to read the cards first. Holding it invisible for a moment
+ * and then popping it in — after the dealt cards' own 0.8s entrance has
+ * had time to land — gives that pause without slowing down play for
+ * anyone who hits/stands their way here instead (the buttons underneath
+ * are already live; this only delays the visual reveal).
+ */
+@keyframes result-reveal {
+    0% { opacity: 0; transform: scale(0.7) translateY(10px); }
+    60% { opacity: 1; transform: scale(1.08) translateY(0); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
 .won, .Draw {
     text-align: center;
     font-weight: bold;
     font-size: 3rem;
     text-transform: uppercase;
     text-shadow: 1px 1px 10px black;
+    opacity: 0;
+    animation: result-reveal 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) 0.9s forwards;
 }
 
 .You {
-    color: #DEDEDE;
+    color: var(--gold-bright);
 }
 
 .Dealer {
-    color: #AC312D;
+    color: var(--maroon-bright);
 }

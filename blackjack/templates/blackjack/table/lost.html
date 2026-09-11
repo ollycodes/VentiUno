@@ -1,17 +1,9 @@
 {% load static %}
 {% include "blackjack/table/header.html" %}
 
-<div class="left-info">
-    <h3>Bank: {{ game.coins }}</h3>
+<div class="info-panel">
     <p class="{{ game.winner }}">{{ game.winner }}!</p>
-</div>
-
-<div class="left-button">
-    <form class="button-form" hx-post="{% url 'blackjack:lost' %}"
-        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
-        {% csrf_token %}
-        <input name="action" class="button" type="submit" id="Quit" value="Quit"/>
-    </form>
+    {% include "blackjack/table/game-stats.html" with show_shoe=True %}
 </div>
 
 <div class="center">
@@ -48,12 +40,15 @@
     {% endif %}
 </div>
 
-{% include "blackjack/table/right-info.html" %}
-
-<div class="right-button">
+<div class="button-panel">
     <form class="button-form" hx-post="{% url 'blackjack:lost' %}"
         hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
         {% csrf_token %}
         <input name="action" class="button red" type="submit" id="Continue?" value="Continue?"/>
+    </form>
+    <form class="button-form" hx-post="{% url 'blackjack:lost' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
+        {% csrf_token %}
+        <input name="action" class="button" type="submit" id="Quit" value="Quit"/>
     </form>
 </div>

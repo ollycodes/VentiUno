@@ -2,19 +2,8 @@
 
 {% include "blackjack/table/header.html" %}
 
-<div class="left-info">
-    <h3>Bank: </h3>
-    <p>{{ game.coins }}</p>
-    <h3>Bet: </h3>
-    <p>{{ game.bet }}</p>
-</div>
-
-<div class="left-button">
-    <form class="button-form" hx-post="{% url 'blackjack:action' %}"
-        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
-        {% csrf_token %}
-        <input name="action" class="button" type="submit" id="hit" value="hit"/>
-    </form>
+<div class="info-panel">
+    {% include "blackjack/table/game-stats.html" with show_bet=True show_shoe=True %}
 </div>
 
 <div class="center" id="center-div">
@@ -46,9 +35,12 @@
     </div>
 </div>
 
-{% include "blackjack/table/right-info.html" %}
-
-<div class="right-button">
+<div class="button-panel">
+    <form class="button-form" hx-post="{% url 'blackjack:action' %}"
+        hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
+        {% csrf_token %}
+        <input name="action" class="button" type="submit" id="hit" value="hit"/>
+    </form>
     <form class="button-form" hx-post="{% url 'blackjack:action' %}"
         hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
         {% csrf_token %}
