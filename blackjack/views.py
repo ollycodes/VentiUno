@@ -153,28 +153,40 @@ def divvy_view(request):
 
 
 def table_view(request):
+    """
+    A pure GET — nothing here mutates the game, so the round is either
+    already fully wrapped up (in which case the outcome screen was already
+    shown by whichever POST concluded it) or still genuinely open.
+    """
     game = tl.GameLogic.from_session(request.session)
     if game is None:
         return redirect('blackjack:home')
 
-    if game.bet == 0:
+    if game.bet == 0 and game.split_bet == 0:
         if game.coins == 0:
             context = _lost_context(request, game)
             return render_table(request, 'blackjack/table/lost.html', context)
         return redirect('blackjack:bet')
-    elif game.player_total == 21:
-        # A natural resolves immediately (the dealer doesn't get a turn
-        # against it); hitting your way to 21 is really an automatic
-        # stand, so the dealer still has to play out from here.
-        if game.is_natural:
-            game.conclude_bet()
-        else:
-            game.stand()
-        game.save(request.session)
+    if not game.insurance_decided:
+        return render_table(request, 'blackjack/table/insurance.html', game_context(request, game))
+    return render_table(request, 'blackjack/table/pending.html', game_context(request, game))
+
+
+def _render_round_state(request, game):
+    """
+    Renders whatever the hand calls for right after a move that may have
+    changed it: the round just concluded, an insurance decision is still
+    pending, or play continues. Shared by bet_view (right after dealing)
+    and action() (right after hit/stand/double/split/insurance) so the
+    response always reflects state as of that same request.
+    """
+    if game.bet == 0 and game.split_bet == 0:
         if game.coins == 0:
             context = _lost_context(request, game)
             return render_table(request, 'blackjack/table/lost.html', context)
-        return render_table(request, 'blackjack/table/bust.html', game_context(request, game))
+        return render_table(request, 'blackjack/table/resolved.html', game_context(request, game))
+    if not game.insurance_decided:
+        return render_table(request, 'blackjack/table/insurance.html', game_context(request, game))
     return render_table(request, 'blackjack/table/pending.html', game_context(request, game))
 
 
@@ -207,9 +219,9 @@ def bet_view(request):
             if action_name == 'quickplay':
                 game.quickplay_bet()
             if game.bet > 0:
-                game.check_deck()
+                game.deal_hand()
                 game.save(request.session)
-                return redirect('blackjack:table')
+                return _render_round_state(request, game)
             error = "Put at least one coin in before placing your bet."
 
         game.save(request.session)
@@ -229,24 +241,22 @@ def action(request):
         return redirect('blackjack:home')
 
     move = request.POST.get('action')
-    if move == 'stand':
-        game.stand()
-        game.save(request.session)
-        if game.coins == 0 and game.winner == 'Dealer won':
-            context = _lost_context(request, game)
-            return render_table(request, 'blackjack/table/lost.html', context)
-        return render_table(request, 'blackjack/table/stand.html', game_context(request, game))
-    elif move == 'hit':
+    if move == 'hit':
         game.hit()
-        game.save(request.session)
-        if game.player_total > 21:
-            game.conclude_bet()
-            game.save(request.session)
-            if game.coins == 0:
-                context = _lost_context(request, game)
-                return render_table(request, 'blackjack/table/lost.html', context)
-            return render_table(request, 'blackjack/table/bust.html', game_context(request, game))
-    return redirect('blackjack:table')
+    elif move == 'stand':
+        game.stand()
+    elif move == 'double':
+        game.double()
+    elif move == 'split':
+        game.split()
+    elif move == 'insurance_yes':
+        game.decide_insurance(True)
+    elif move == 'insurance_no':
+        game.decide_insurance(False)
+    else:
+        return redirect('blackjack:table')
+    game.save(request.session)
+    return _render_round_state(request, game)
 
 
 def lost(request):

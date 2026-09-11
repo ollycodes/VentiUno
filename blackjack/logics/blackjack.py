@@ -12,29 +12,50 @@ class GameLogic:
     player_hand: t.List[cl.Card]
     dealer_hand: t.List[cl.Card]
     wallet: Wallet  # denomination -> coins on hand, available to bet
-    pit: Wallet     # denomination -> coins currently wagered
+    pit: Wallet     # denomination -> coins currently wagered on player_hand
+    split_hand: t.List[cl.Card]  # empty unless the player has split
+    split_pit: Wallet            # denomination -> coins wagered on split_hand
+    active_hand: str             # 'main' or 'split' — which hand hit/stand act on
+    insurance_pit: Wallet        # denomination -> coins wagered as insurance
+    insurance_decided: bool      # has the up-front insurance choice been made?
     high_score: int
     biggest_bet: int
 
-    def _total(self, hand):
-        hand_total = 0
+    def _total(self, cards):
+        total = 0
         has_ace = False
-        for card in getattr(self, hand):
+        for card in cards:
             card_value = cl.RANKS.get(card.rank)
             if card_value == 1:
                 has_ace = True
-            hand_total += card_value
-        if hand_total <= 11 and has_ace:
-            hand_total += 10
-        return hand_total
+            total += card_value
+        if total <= 11 and has_ace:
+            total += 10
+        return total
 
     @property
     def player_total(self):
-        return self._total("player_hand")
+        return self._total(self.player_hand)
 
     @property
     def dealer_total(self):
-        return self._total("dealer_hand")
+        return self._total(self.dealer_hand)
+
+    @property
+    def split_total(self):
+        return self._total(self.split_hand)
+
+    @property
+    def active_total(self):
+        return self._total(self._active_cards)
+
+    @property
+    def _active_cards(self):
+        return self.split_hand if self.active_hand == 'split' else self.player_hand
+
+    @property
+    def _active_pit(self):
+        return self.split_pit if self.active_hand == 'split' else self.pit
 
     @property
     def deck_card_count(self):
@@ -57,14 +78,83 @@ class GameLogic:
         return sum(denom * count for denom, count in self.pit.items())
 
     @property
-    def winner(self):
-        if self.player_total == self.dealer_total:
-            return "Draw"
-        elif self.player_total > self.dealer_total and self.player_total <= 21:
+    def split_bet(self):
+        return sum(denom * count for denom, count in self.split_pit.items())
+
+    @property
+    def total_wagered(self):
+        return self.bet + self.split_bet
+
+    @property
+    def insurance_amount(self):
+        return self.bet // 2
+
+    @property
+    def is_natural(self):
+        """
+        A blackjack dealt straight from the first two cards, not built up
+        by hitting. A hand reconstituted from a split is never a natural,
+        even if it lands on 21 with its one dealt card — real rules only
+        give the 3:2 bonus to the original, ungapped first two cards.
+        """
+        return not self.split_hand and len(self.player_hand) == 2 and self.player_total == 21
+
+    @property
+    def dealer_shows_ace(self):
+        """The dealer's up-card (first card — pending.html shows it face-up, the rest face-down)."""
+        return bool(self.dealer_hand) and cl.RANKS[self.dealer_hand[0].rank] == 1
+
+    def _winner_for(self, total):
+        # A bust is an unconditional loss and must be checked before
+        # anything else: _finish_active_hand plays the dealer out *before*
+        # settling a hand that may have already busted, so a player total
+        # over 21 must never be compared against a dealer total at all
+        # (otherwise a dealer who also busts would make a busted player
+        # "win").
+        if total > 21:
+            return "Dealer won"
+        if self.dealer_total > 21:
             return "You won"
-        elif self.dealer_total > 21:
+        if total == self.dealer_total:
+            return "Draw"
+        if total > self.dealer_total:
             return "You won"
         return "Dealer won"
+
+    @property
+    def winner(self):
+        return self._winner_for(self.player_total)
+
+    @property
+    def split_winner(self):
+        return self._winner_for(self.split_total)
+
+    @property
+    def can_hit(self):
+        if len(self._active_cards) < 2:
+            return False
+        if self.split_hand and cl.RANKS[self._active_cards[0].rank] == 1:
+            return False  # aces split: exactly one card each, no further hitting
+        return self.active_total < 21
+
+    @property
+    def can_double(self):
+        return len(self._active_cards) == 2 and self.coins >= sum(
+            denom * count for denom, count in self._active_pit.items()
+        )
+
+    @property
+    def can_split(self):
+        if self.split_hand or self.active_hand == 'split' or len(self.player_hand) != 2:
+            return False
+        first, second = self.player_hand
+        if cl.RANKS[first.rank] != cl.RANKS[second.rank]:
+            return False
+        return self.coins >= self.bet
+
+    @property
+    def can_insure(self):
+        return self.insurance_amount > 0 and self.coins >= self.insurance_amount
 
     # COIN ACTIONS
     # The bet is never a typed amount — it's just whatever coins are
@@ -84,6 +174,26 @@ class GameLogic:
             self.pit[denom] -= count
             self.wallet[denom] = self.wallet.get(denom, 0) + count
 
+    def _wager(self, target_pit, amount):
+        """
+        Moves `amount` dollars from the wallet into target_pit. Breaks
+        down held coins first if nothing small enough is on hand, then
+        greedily composes the amount largest-coin-first — the same
+        approach quickplay_bet uses for its target bet.
+        """
+        held = [denom for denom, count in self.wallet.items() if count > 0]
+        while held and min(held) > amount:
+            self.break_coin(min(held))
+            held = [denom for denom, count in self.wallet.items() if count > 0]
+
+        remaining = amount
+        for denom in sorted(cl.COIN_LADDER, reverse=True):
+            count = min(self.wallet.get(denom, 0), remaining // denom)
+            if count:
+                self.wallet[denom] -= count
+                target_pit[denom] = target_pit.get(denom, 0) + count
+                remaining -= count * denom
+
     def quickplay_bet(self):
         """
         A modest, no-thought bet for a player who'd rather keep playing
@@ -96,18 +206,7 @@ class GameLogic:
         target = max(1, self.coins // 5) if self.coins > 0 else 0
         if target <= 0:
             return
-
-        held = [denom for denom, count in self.wallet.items() if count > 0]
-        while held and min(held) > target:
-            self.break_coin(min(held))
-            held = [denom for denom, count in self.wallet.items() if count > 0]
-
-        remaining = target
-        for denom in sorted(cl.COIN_LADDER, reverse=True):
-            count = min(self.wallet.get(denom, 0), remaining // denom)
-            if count:
-                self.bet_coin(denom, count)
-                remaining -= count * denom
+        self._wager(self.pit, target)
 
     def clear_bet(self):
         for denom, count in list(self.pit.items()):
@@ -146,10 +245,50 @@ class GameLogic:
             self.player_hand = cl.draw_cards(self.deck, 2)
             self.dealer_hand = cl.draw_cards(self.deck, 2)
 
-    @property
-    def is_natural(self):
-        """A blackjack dealt straight from the first two cards, not built up by hitting."""
-        return len(self.player_hand) == 2 and self.player_total == 21
+    def deal_hand(self):
+        """
+        Deals a fresh hand and resets everything split/insurance-related
+        from the previous one. Deliberately doesn't resolve a natural or a
+        dealer blackjack itself — bet_view checks the state right after
+        calling this and renders the outcome directly, the same way
+        action() already does after a hit/stand, so the resolution reads
+        as "whichever request caused it" rather than something table_view
+        has to reconstruct after the fact.
+        """
+        self.check_deck()
+        self.split_hand = []
+        self.split_pit = {denom: 0 for denom in cl.COIN_LADDER}
+        self.insurance_pit = {denom: 0 for denom in cl.COIN_LADDER}
+        self.active_hand = 'main'
+        self.insurance_decided = not self.dealer_shows_ace
+        if self.insurance_decided:
+            self._resolve_deal()
+
+    def decide_insurance(self, take):
+        if take and self.can_insure:
+            self._wager(self.insurance_pit, self.insurance_amount)
+        self.insurance_decided = True
+        self._resolve_deal()
+
+    def _resolve_deal(self):
+        """
+        Peeks the dealer's hole card once the insurance decision (if any)
+        is settled. A dealer natural pays/forfeits insurance and ends the
+        round immediately (no player turn against a dealer blackjack); if
+        the dealer doesn't have one, a taken insurance bet is simply lost,
+        and the player's own natural (if any) still resolves immediately.
+        """
+        dealer_natural = len(self.dealer_hand) == 2 and self.dealer_total == 21
+        if sum(self.insurance_pit.values()):
+            if dealer_natural:
+                amount = sum(denom * count for denom, count in self.insurance_pit.items())
+                for denom, count in self.insurance_pit.items():
+                    if count:
+                        self.wallet[denom] = self.wallet.get(denom, 0) + count
+                self._pay_out(amount * 2)
+            self.insurance_pit = {denom: 0 for denom in cl.COIN_LADDER}
+        if dealer_natural or self.is_natural:
+            self.conclude_bet()
 
     def _pay_out(self, amount):
         """Credits `amount` dollars to the wallet, broken into coins largest-first."""
@@ -158,40 +297,86 @@ class GameLogic:
             if count:
                 self.wallet[denom] = self.wallet.get(denom, 0) + count
 
-    def conclude_bet(self):
-        bet = self.bet
+    def _settle_hand(self, cards, pit, is_natural):
+        total = self._total(cards)
+        bet = sum(denom * count for denom, count in pit.items())
+        winner = self._winner_for(total)
         # Winnings are always paid in the same denominations that were
         # wagered, just multiplied — never converted into other coins.
         # The one exception is a natural blackjack's 3:2 bonus, which can't
         # land on a whole-dollar multiple of the wagered coins, so that
         # bonus half is paid out fresh instead (see _pay_out).
-        if self.winner == "Draw":
-            for denom, count in self.pit.items():
+        if winner == "Draw":
+            for denom, count in pit.items():
                 if count:
                     self.wallet[denom] = self.wallet.get(denom, 0) + count
-        elif self.winner == "You won":
-            if self.is_natural:
-                for denom, count in self.pit.items():
+        elif winner == "You won":
+            if is_natural:
+                for denom, count in pit.items():
                     if count:
                         self.wallet[denom] = self.wallet.get(denom, 0) + count
                 self._pay_out(bet // 2)
             else:
-                for denom, count in self.pit.items():
+                for denom, count in pit.items():
                     if count:
                         self.wallet[denom] = self.wallet.get(denom, 0) + count * 2
-        self.pit = {denom: 0 for denom in cl.COIN_LADDER}
+        for denom in cl.COIN_LADDER:
+            pit[denom] = 0
         if self.biggest_bet < bet:
             self.biggest_bet = bet
+
+    def conclude_bet(self):
+        self._settle_hand(self.player_hand, self.pit, self.is_natural)
+        if self.split_hand:
+            self._settle_hand(self.split_hand, self.split_pit, is_natural=False)
         if self.high_score < self.coins:
             self.high_score = self.coins
 
     def hit(self):
-        self.player_hand += cl.draw_cards(self.deck, 1)
+        if not self.can_hit:
+            return
+        if self.active_hand == 'split':
+            self.split_hand += cl.draw_cards(self.deck, 1)
+        else:
+            self.player_hand += cl.draw_cards(self.deck, 1)
+        if self.active_total >= 21:
+            self._finish_active_hand()
 
-    def stand(self):
+    def double(self):
+        if not self.can_double:
+            return
+        pit = self._active_pit
+        self._wager(pit, sum(denom * count for denom, count in pit.items()))
+        if self.active_hand == 'split':
+            self.split_hand += cl.draw_cards(self.deck, 1)
+        else:
+            self.player_hand += cl.draw_cards(self.deck, 1)
+        self._finish_active_hand()
+
+    def split(self):
+        if not self.can_split:
+            return
+        self.split_hand = [self.player_hand.pop()]
+        self._wager(self.split_pit, self.bet)
+        self.player_hand += cl.draw_cards(self.deck, 1)
+        self.split_hand += cl.draw_cards(self.deck, 1)
+
+    def _finish_active_hand(self):
+        """
+        Called whenever the active hand's turn is over (stood, busted, hit
+        to 21, or doubled). Moves to the split hand's turn if there is one
+        still to play; otherwise plays the dealer out and settles every
+        wagered hand.
+        """
+        if self.active_hand == 'main' and self.split_hand:
+            self.active_hand = 'split'
+            return
         while self.dealer_total < 17:
             self.dealer_hand += cl.draw_cards(self.deck, 1)
         self.conclude_bet()
+
+    def stand(self):
+        self._finish_active_hand()
 
     @classmethod
     def new(cls):
@@ -202,6 +387,11 @@ class GameLogic:
             dealer_hand=[],
             wallet={denom: 0 for denom in cl.COIN_LADDER},
             pit={denom: 0 for denom in cl.COIN_LADDER},
+            split_hand=[],
+            split_pit={denom: 0 for denom in cl.COIN_LADDER},
+            active_hand='main',
+            insurance_pit={denom: 0 for denom in cl.COIN_LADDER},
+            insurance_decided=True,
             high_score=0,
             biggest_bet=0,
         )
@@ -215,6 +405,11 @@ class GameLogic:
             # through str() on the way out and int() on the way back in.
             wallet={str(denom): count for denom, count in self.wallet.items()},
             pit={str(denom): count for denom, count in self.pit.items()},
+            split_hand=cl.cards_to_json(self.split_hand),
+            split_pit={str(denom): count for denom, count in self.split_pit.items()},
+            active_hand=self.active_hand,
+            insurance_pit={str(denom): count for denom, count in self.insurance_pit.items()},
+            insurance_decided=self.insurance_decided,
             high_score=self.high_score,
             biggest_bet=self.biggest_bet,
         )
@@ -231,6 +426,11 @@ class GameLogic:
             dealer_hand=cl.cards_from_json(data['dealer_hand']),
             wallet={int(denom): count for denom, count in data['wallet'].items()},
             pit={int(denom): count for denom, count in data['pit'].items()},
+            split_hand=cl.cards_from_json(data['split_hand']),
+            split_pit={int(denom): count for denom, count in data['split_pit'].items()},
+            active_hand=data['active_hand'],
+            insurance_pit={int(denom): count for denom, count in data['insurance_pit'].items()},
+            insurance_decided=data['insurance_decided'],
             high_score=data['high_score'],
             biggest_bet=data['biggest_bet'],
         )
