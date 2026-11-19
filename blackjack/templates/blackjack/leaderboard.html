@@ -13,23 +13,19 @@
                 <th>Score</th>
             </tr>
         </thead>
-        {% for entry in entries %}
         <tbody>
+            {% for entry in entries %}
             <tr>
                 <td>{{ entry.name }}</td>
                 <td>{{ entry.biggest_bet }}</td>
                 <td>{{ entry.score }}</td>
             </tr>
-        </tbody>
-        {% empty %}
-        <tbody>
+            {% empty %}
             <tr>
-                <td>head empty.</td>
-                <td>000</td>
-                <td>000</td>
+                <td colspan="3" class="empty-row">No scores yet. Go broke with a big enough run and yours goes here.</td>
             </tr>
+            {% endfor %}
         </tbody>
-        {% endfor %}
     </table>
 </div>
 {% endblock content %}

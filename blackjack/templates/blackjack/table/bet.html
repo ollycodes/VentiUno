@@ -32,7 +32,7 @@
     {% if error %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endif %}
 
     <h3>Your bet</h3>
-    <div class="pit">
+    <div class="pit" data-empty="Click or drag chips from your wallet to bet">
         {% for denom, count in game.pit.items %}
         {% if count > 0 %}
         <form hx-post="{% url 'blackjack:bet' %}" hx-target="#table" hx-swap="innerHTML"
