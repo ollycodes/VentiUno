@@ -3,8 +3,13 @@
 
 {% block content %}
     {% include "blackjack/table/header.html" %}
-    <div class="center" id="center-div">
-        <h2>Blackjack!</h2>
+    <div class="center hero" id="center-div">
+        <div class="hero-fan" aria-hidden="true">
+            <img src="{% static 'blackjack/svgs/fronts/spades_ace.svg' %}" alt=""/>
+            <img src="{% static 'blackjack/svgs/fronts/hearts_king.svg' %}" alt=""/>
+        </div>
+        <h1>Blackjack</h1>
+        <p class="tagline">Divvy your bank into chips, beat the dealer to 21,<br/>and see how long you can last.</p>
         {% if has_game %}
         <a class="button small" href="{% url 'blackjack:table' %}">Resume</a>
         <a class="button small" href="{% url 'blackjack:new_game' %}">New Game</a>

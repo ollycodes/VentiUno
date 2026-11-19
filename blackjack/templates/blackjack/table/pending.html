@@ -53,13 +53,15 @@
     <form class="button-form" hx-post="{% url 'blackjack:action' %}"
         hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
         {% csrf_token %}
-        <input name="action" class="button" type="submit" id="hit" value="hit"/>
+        <input type="hidden" name="action" value="hit"/>
+        <input class="button" type="submit" id="hit" value="Hit"/>
     </form>
     {% endif %}
     <form class="button-form" hx-post="{% url 'blackjack:action' %}"
         hx-target="#table" hx-swap="innerHTML" hx-disabled-elt="find input[type='submit']" method="post">
         {% csrf_token %}
-        <input name="action" class="button" type="submit" id="stand" value="stand"/>
+        <input type="hidden" name="action" value="stand"/>
+        <input class="button" type="submit" id="stand" value="Stand"/>
     </form>
     {% if game.can_double %}
     <form class="button-form" hx-post="{% url 'blackjack:action' %}"

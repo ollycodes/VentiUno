@@ -11,7 +11,7 @@
     {% if error %}<ul class="errorlist"><li>{{ error }}</li></ul>{% endif %}
 
     <h3>Your bank</h3>
-    <div class="pit">
+    <div class="pit" data-empty="Add coins below to fill your bank">
         {% for denom, count in divvy.items %}
         {% if count > 0 %}
         <form hx-post="{% url 'blackjack:divvy' %}" hx-target="#table" hx-swap="innerHTML"

@@ -1,6 +1,9 @@
 {% load static %}
-<div class="header">
-    <a href="{% url 'blackjack:home' %}">Home</a>
-    <a href="{% url 'blackjack:options' %}">Options</a>
-    <a href="{% url 'blackjack:leaderboard' %}">Leaderboard</a>
-</div>
+<nav class="header">
+    <a class="brand" href="{% url 'blackjack:home' %}"><span class="brand-suit">&hearts;</span> VentiUno</a>
+    <div class="nav-links">
+        <a href="{% url 'blackjack:home' %}">Home</a>
+        <a href="{% url 'blackjack:options' %}">Options</a>
+        <a href="{% url 'blackjack:leaderboard' %}">Leaderboard</a>
+    </div>
+</nav>
