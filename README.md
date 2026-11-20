@@ -68,22 +68,13 @@ This project uses [uv](https://docs.astral.sh/uv/) to manage the virtual environ
 
 ## 📓 Retrospective
 
-> _Draft: rewrite this in your own words._
+I built VentiUno to test my Python skills and see how they translated to web development, which led me to Django. Django was a great framework to learn on: the documentation is detailed, well structured, and intuitive. What I struggled with, I realize now, is that I was using Django with the mindset of a JavaScript developer.
 
-VentiUno was my first Django project, started in 2022. I wanted to build a blackjack game that felt like a single-page app without reaching for a JavaScript framework, and that's what pulled me into htmx and server-rendered partials.
+I started with some game logic and a rough idea of how Django's model-view-template structure could handle game actions, but I didn't want every action to reload the page. That pointed me toward single-page apps, and I read everything I could find about them, but most of it didn't fit how Django is meant to work. I settled on server-rendered template partials, with htmx swapping in each game action. I experimented with Animate.css for a while, but ended up relying mostly on my own CSS.
 
-**What I set out to build:** multiple game instances, betting with high scores, and customizable decks.
+If I built it again, I'd use React for the game itself. Blackjack's state changes on every click, and in VentiUno that meant a server round trip and a session write for every hit and stand, plus values threaded through layers of nested templates. Django would still be my choice for the parts that are truly server-side, like the leaderboard. It was a fantastic project to learn on, and it taught me to match the tool to the shape of the problem.
 
-**What shipped:** a playable table with chip-based betting, the standard blackjack moves (split, double down, insurance), a leaderboard, 12 deck styles, and a mobile layout. Session-based games replaced the original idea of multiple saved game instances, because a no-login app turned out to be simpler and fit better.
-
-**Revisiting it in 2026:** I came back to fix bugs in the dealer logic and payouts, add the missing table rules and a test suite, and give the UI a final polish before calling the project finished.
-
-**What I'd do differently now:**
-- Write the game logic test-first from day one, instead of adding tests at the end.
-- Design the UI (layout, palette, components) up front, instead of styling page by page as features landed.
-- _Add your own lessons here._
-
-This project is complete and no longer actively developed.
+In 2026 I came back to finish it: I fixed bugs in the dealer logic and payouts, added split, double down, and insurance, wrote a test suite, and gave the UI a final polish. The project is now complete.
 
 ## ♣️ Credits
 - [Playing Cards](https://tekeye.uk/playing_cards/svg-playing-cards)
